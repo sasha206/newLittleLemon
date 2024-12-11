@@ -7,7 +7,7 @@ const MenuContainer = styled.div`
 
 console.log('API_LOCAL', import.meta.env.VITE_API_LOCAL);
 console.log('API', import.meta.env.APP_API);
-console.log('API', import.meta.env.VITE_APP_TEST);
+console.log('visibleEnvTest', import.meta.env.VITE_APP_TEST);
 // Компонент меню
 const Menu = () => {
 
