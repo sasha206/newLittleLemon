@@ -17,6 +17,7 @@ const Title = styled.h2`
 `;
 
 const SpecialsGrid = styled.div`
+  margin-bottom: 10px;
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -64,6 +65,14 @@ const MenuButton = styled(Button)`
   font-size: 16px;
   text-decoration: none;
   border-radius: 8px;
+
+  @media (max-width: 768px) {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-size: 28px; /* Увеличиваем размер шрифта на мобильных */
+    padding: 36px 48px; /* Увеличиваем отступы для кнопки */
+    border-radius: 40px;
+  }
 
   &:hover {
     background-color: #bbbbbb;

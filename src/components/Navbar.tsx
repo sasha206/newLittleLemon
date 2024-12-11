@@ -10,7 +10,7 @@ const Navbar = styled.nav`
   align-items: center;
   padding: 25px 0;
   margin: 0 120px;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     margin: 0 20px;
@@ -25,18 +25,22 @@ const Logo = styled.img`
 const UlStyled = styled.ul`
   display: flex;
   list-style: none;
-  margin: 1;
+  margin: 0;
   padding: 0;
+  opacity: 1; /* На больших экранах меню всегда видимо */
+  transition: opacity 0.3s ease-in-out; /* Плавное появление меню */
 
   @media (max-width: 768px) {
     display: none; /* Скрываем меню на мобильных */
     flex-direction: column;
     width: 100%;
     text-align: center;
+    opacity: 0; /* Скрываем меню по умолчанию */
   }
 
-  @media (min-width: 769px) {
-    display: flex; /* Показываем меню для экранов более 768px */
+  &.active {
+    display: flex;
+    opacity: 1; /* Показываем меню, когда оно активировано */
   }
 `;
 
@@ -55,11 +59,11 @@ const LinkStyled = styled(NavLink)`
   padding: 5px 10px;
   border-radius: 11px;
   font-family: 'Karla', sans-serif;
-  
+
   &:hover {
     background-color: #BBBBBB;
   }
-  
+
   &:active {
     background-color: #BBBBBB;
     color: white;
@@ -72,10 +76,13 @@ const LinkStyled = styled(NavLink)`
 `;
 
 const BurgerButton = styled.div`
+  margin-top: 5px;
+  margin-bottom:15px;
   display: none;
   cursor: pointer;
   flex-direction: column;
   gap: 4px;
+  transition: transform 0.3s ease-in-out; /* Анимация для бургер кнопки */
 
   @media (max-width: 768px) {
     display: flex;
@@ -85,14 +92,32 @@ const BurgerButton = styled.div`
     width: 30px;
     height: 3px;
     background-color: black;
+    border-radius: 3px; /* Скругляем полоски */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Анимации для полосок */
+  }
+
+  &.active div:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px); /* Первая полоска поворачивается */
+  }
+
+  &.active div:nth-child(2) {
+    opacity: 0; /* Вторая полоска исчезает */
+  }
+
+  &.active div:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px); /* Третья полоска поворачивается */
   }
 `;
 
 const NavBar = () => {
   const toggleMenu = () => {
     const menu = document.getElementById('menu');
+    const burger = document.getElementById('burger');
     if (menu) {
-      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+      menu.classList.toggle('active'); // Добавляем или убираем класс .active для меню
+    }
+    if (burger) {
+      burger.classList.toggle('active'); // Добавляем или убираем класс .active для бургер кнопки
     }
   };
 
@@ -100,7 +125,7 @@ const NavBar = () => {
     <DivNav>
       <Navbar>
         <Logo src={logo} />
-        <BurgerButton onClick={toggleMenu}>
+        <BurgerButton id="burger" onClick={toggleMenu}>
           <div></div>
           <div></div>
           <div></div>
