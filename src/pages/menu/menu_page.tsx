@@ -14,6 +14,7 @@ const Menu = () => {
     return (
         <MenuContainer>
             <h1>Our Menu</h1>
+            <h1>{import.meta.env.VITE_API_LOCAL}</h1>
         </MenuContainer>
     );
 };
