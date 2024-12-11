@@ -5,8 +5,8 @@ const MenuContainer = styled.div`
     text-align: center;
 `;
 
-console.log('REACT_APP_TEST_VARIABLE', import.meta.env.REACT_APP_TEST_VARIABLE);
-
+console.log('VITE_APP_API_KEY', import.meta.env.VITE_APP_API_KEY);
+console.log('VITE_PASSWORD', import.meta.env.APP_PASSWORD);
 // Компонент меню
 const Menu = () => {
 
