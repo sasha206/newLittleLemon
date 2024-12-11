@@ -6,7 +6,7 @@ const MenuContainer = styled.div`
 `;
 
 console.log('VITE_APP_API_KEY', import.meta.env.VITE_APP_API_KEY);
-console.log('VITE_APP_TEST_VARIABLE', import.meta.env.VITE_APP_TEST_VARIABLE);
+console.log('VITE_APP_TEST_VARIABLE', import.meta.env.APP_TEST_VARIABLE);
 // Компонент меню
 const Menu = () => {
 
