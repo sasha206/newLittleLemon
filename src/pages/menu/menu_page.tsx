@@ -4,6 +4,9 @@ import styled from 'styled-components';
 const MenuContainer = styled.div`
     text-align: center;
 `;
+
+console.log('REACT_APP_TEST_VARIABLE', import.meta.env.REACT_APP_TEST_VARIABLE);
+
 // Компонент меню
 const Menu = () => {
 
