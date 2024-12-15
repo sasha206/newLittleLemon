@@ -70,7 +70,7 @@ const MenuButton = styled(Button)`
     margin-top: 50px;
     margin-bottom: 50px;
     font-size: 28px; /* Увеличиваем размер шрифта на мобильных */
-    padding: 36px 48px; /* Увеличиваем отступы для кнопки */
+    padding: 24px 36px; /* Увеличиваем отступы для кнопки */
     border-radius: 40px;
   }
 

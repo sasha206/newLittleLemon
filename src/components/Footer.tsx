@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
 
 const FooterWrapper = styled.div`
     background-color: #ADB6C4;
     color: white;
     padding: 20px;
-    text-align: right;
+    text-align: center;
 `;
 
 const FooterHeader = styled.h1`
@@ -17,11 +18,16 @@ const FooterText = styled.p`
     margin: 5px 0;
 `;
 
+const ContainerSocialLinks = styled.div`
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+`
 const SocialLinks = styled.div`
-    margin-top: 15px;
+
     display: flex;
-    justify-content: right;
-    gap: 15px;
+    justify-content: center;
+    gap: 35px;
 
     a {
         color: white;
@@ -37,10 +43,28 @@ const SocialLinks = styled.div`
     }
 
     img {
-        width: 20px;
-        height: 20px;
+        width: 40px;
+        height: 40px;
     }
 `;
+
+const AdminLink = styled(NavLink)`
+  color: black;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 11px;
+  font-family: 'Karla', sans-serif;
+  background-color: #BBBBBB;
+
+  &:hover {
+    background-color: #6e6e6e;
+  }
+
+  &:active {
+    background-color: #6e6e6e;
+    color: white;
+  }
+`
 
 const Footer = () => {
     return (
@@ -49,17 +73,23 @@ const Footer = () => {
                 <FooterHeader>Little Lemon</FooterHeader>
                 <FooterText>Located in Chicago on Lemon Street</FooterText>
                 <FooterText>&copy; 2024 Little Lemon Restaurant. All rights reserved.</FooterText>
+                <ContainerSocialLinks>
                 <SocialLinks>
-                    <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-                        <img src="/facebook-logo.png" alt="Facebook" /> Facebook
+                    <a href="https://www.facebook.com">
+                        <img src="/Facebook_Logo_Secondary.png" alt="Facebook" />
                     </a>
-                    <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
-                        <img src="/twitter-logo.png" alt="Twitter" /> Twitter
+                    <a href="https://www.twitter.com">
+                        <img src="/logo-white.png" alt="Twitter" />
                     </a>
-                    <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
-                        <img src="/instagram-logo.png" alt="Instagram" /> Instagram
+                    <a href="https://www.instagram.com">
+                        <img src="/Instagram_Glyph_White.png" alt="Instagram" />
                     </a>
                 </SocialLinks>
+                    <div>
+                        <AdminLink to={'/admin_panel'}>Admin panel</AdminLink>
+                    </div>
+                </ContainerSocialLinks>
+
             </footer>
         </FooterWrapper>
     );

@@ -124,15 +124,13 @@ const NavBar = () => {
   return (
     <DivNav>
       <Navbar>
-        <Logo src={logo} />
+        <NavLink to={"/"}><Logo src={logo} /></NavLink>
         <BurgerButton id="burger" onClick={toggleMenu}>
           <div></div>
           <div></div>
           <div></div>
         </BurgerButton>
         <UlStyled id="menu">
-          <NavItem><LinkStyled to="/">Home</LinkStyled></NavItem>
-          <NavItem><LinkStyled to="/about">About</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/menu">Menu</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/reservations">Reservations</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/order">Order Online</LinkStyled></NavItem>

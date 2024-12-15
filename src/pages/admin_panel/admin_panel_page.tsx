@@ -1,6 +1,6 @@
 import { Authenticator } from '@aws-amplify/ui-react';
 
-const Login = () => {
+const Admin_panel = () => {
     return(
 <Authenticator>
       {({ signOut, user }) => (
@@ -12,5 +12,4 @@ const Login = () => {
     </Authenticator>
     )
 }
-
-export default Login;
+export default Admin_panel;
