@@ -8,7 +8,7 @@ export default function TodoList() {
   const [todos, setTodos] = useState<Schema["ItemMenu"]["type"][]>([]);
 
   const fetchTodos = async () => {
-    const { data: items, errors } = await client.models.ItemMenu.list();
+    const { data: items } = await client.models.ItemMenu.list();
     setTodos(items);
   };
 
