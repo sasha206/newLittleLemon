@@ -135,6 +135,7 @@ const NavBar = () => {
           <NavItem><LinkStyled to="/reservations">Reservations</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/order">Order Online</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/login">Login</LinkStyled></NavItem>
+          <NavItem><LinkStyled to="/about">About</LinkStyled></NavItem>
         </UlStyled>
       </Navbar>
     </DivNav>
