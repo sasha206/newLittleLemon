@@ -6,8 +6,6 @@ import { generateClient } from 'aws-amplify/data'
 const MenuContainer = styled.div`
     text-align: center;
 `;
-
-
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
@@ -15,11 +13,14 @@ const client = generateClient<Schema>();
 const createItem = async () => {
     await client.models.ItemMenu.create({
       title: window.prompt("Item menu?"),
-      isDone: false
+      isDone: false,
     })
   }
-
-
+  const { errors, data: newItem } = await client.models.ItemMenu.create({
+    title: "My new todo",
+    isDone: true,
+  })
+  
 
 
 
