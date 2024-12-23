@@ -2,7 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
   ItemMenu: a.model({
-    tittle: a.string(),
+    title: a.string(),
     description: a.string(),
     price: a.float(),
     image: a.string(),

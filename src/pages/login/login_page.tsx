@@ -6,29 +6,26 @@ import { generateClient } from 'aws-amplify/data'
 
 
 Amplify.configure(outputs);
-const client = generateClient<Schema>()
+const client = generateClient<Schema>({
+  authMode: 'userPool',
+});
 
 
-const createItemMenu = async () => {
-  await client.models.ItemMenu.create({
-    tittle: window.prompt("Name"),
-    isDone: false
-  })
-}
+  const createItem = async () => {
+    await client.models.ItemMenu.create({
+      title: window.prompt("Todo content?"),
+      isDone: false
+    })
+  }
 
 const Login = () => {
-
-
-
-
     return(
 <Authenticator>
       {({ signOut, user }) => (
         <main>
-
           <h1>Hello {user?.username}</h1>
           <button onClick={signOut}>Sign out</button>
-          <button onClick={createItemMenu}>Add new todo</button>
+          <button onClick={createItem}>Add new todo</button>
         </main>
       )}
 </Authenticator>
