@@ -16,8 +16,8 @@ const createItem = async () => {
       isDone: false,
     })
   }
-  const { errors, data: newItem } = await client.models.ItemMenu.create({
-    title: "My new todo",
+  const { data: newItem } = await client.models.ItemMenu.create({
+    title: "Pizza",
     isDone: true,
   })
   
@@ -34,6 +34,8 @@ const Menu = () => {
     return (
         <MenuContainer>
             <button onClick={createItem}>Add new Item</button>
+            <h1>{newItem?.title}</h1>
+
             <h1>Our Menu</h1>
             <h1>{import.meta.env.VITE_API_LOCAL}</h1>
         </MenuContainer>
