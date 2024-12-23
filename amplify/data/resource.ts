@@ -5,7 +5,8 @@ const schema = a.schema({
     tittle: a.string(),
     description: a.string(),
     price: a.float(),
-    image: a.string()
+    image: a.string(),
+    isDone: a.boolean(),
   }).authorization(allow => [
     allow.guest(),
     allow.groups(['admins'])])
