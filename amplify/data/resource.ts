@@ -3,7 +3,9 @@ import { a, defineData, type ClientSchema } from '@aws-amplify/backend';
 const schema = a.schema({
   ItemMenu: a.model({
       title: a.string(),
-      isDone: a.boolean()
+      description: a.string(),
+      image: a.string(),
+      price: a.string()
     })
     .authorization(allow => [allow.publicApiKey()])
 });

@@ -25,9 +25,7 @@ export default function ItemList() {
   const createItem = async () => {
     await client.models.ItemMenu.create({
       title: window.prompt("Todo content?"),
-      isDone: false,
     });
-
     fetchItems();
   }
 
@@ -35,7 +33,7 @@ export default function ItemList() {
     <div>
       <button onClick={createItem}>Add new item</button>
       <ul>
-        {items.map(({ id, title }) => (
+        {items.map(({ id, title}) => (
           <li key={id}>{title}</li>
         ))}
       </ul>
