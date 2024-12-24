@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/data";
