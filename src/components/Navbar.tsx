@@ -133,9 +133,8 @@ const NavBar = () => {
         <UlStyled id="menu">
           <NavItem><LinkStyled to="/menu">Menu</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/reservations">Reservations</LinkStyled></NavItem>
-          <NavItem><LinkStyled to="/order">Order Online</LinkStyled></NavItem>
-          <NavItem><LinkStyled to="/login">Login</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/about">About</LinkStyled></NavItem>
+          <NavItem><LinkStyled to="/login">Login</LinkStyled></NavItem>
         </UlStyled>
       </Navbar>
     </DivNav>
