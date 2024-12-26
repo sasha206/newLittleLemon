@@ -9,7 +9,7 @@ const About = () => {
       acceptedFileTypes={['image/*']}
       path="public/"
       autoUpload={false}
-      maxFileCount={1}
+      maxFileCount={3}
       isResumable
     />
     <StorageImage alt="image" path="public/Facebook_Logo_Primary.png"/>
