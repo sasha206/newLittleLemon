@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import HeaderImg from "../home_components/restauranfood.jpg";
 import { Button } from "antd";
-
+import { StorageImage } from "@aws-amplify/ui-react-storage";
 
 const CustomButton = styled(Button)`
   background-color: #f4ce14;
@@ -144,6 +144,7 @@ const Header = () => {
             <Paragraph>
               We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.
             </Paragraph>
+            <StorageImage alt="sleepy-cat" path="public/Instagram_Glyph_White.png" />
             <CustomButton href="/reservations">Reserve a Table</CustomButton>
           </ArticleHeader>
           <ImgHeader src={HeaderImg} />
