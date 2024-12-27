@@ -7,6 +7,7 @@ import outputs from "../../../amplify_outputs.json";
 import type { Schema } from "../../../amplify/data/resource";
 import { FileUploader } from '@aws-amplify/ui-react-storage';
 import '@aws-amplify/ui-react/styles.css';
+import { StorageImage } from '@aws-amplify/ui-react-storage';
 
   
 Amplify.configure(outputs);
@@ -152,7 +153,9 @@ const About = () => {
                       <h3>{title}</h3>
                       <p>{description}</p>
                       <p>{price} USD</p>
-                      {image && <img src={image} width="100" />}
+                      {image && 
+                      <StorageImage alt='none' path={`${image}`}
+                      style={{ borderRadius: "10px", marginBottom: "10px", width: "100%", height: "200px", objectFit: "cover" }} />}
                     </div>
                     <button onClick={() => handleDelete(id)}>Delete</button>
                   </MenuItem>

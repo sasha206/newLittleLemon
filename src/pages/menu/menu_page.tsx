@@ -5,6 +5,7 @@ import { generateClient } from "aws-amplify/data";
 import { Card, Row, Col } from "antd";
 import outputs from "../../../amplify_outputs.json";
 import type { Schema } from "../../../amplify/data/resource";
+import { StorageImage } from "@aws-amplify/ui-react-storage";
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
@@ -66,7 +67,14 @@ const Menu = () => {
           {menuItems.map(({ id, title, description, image, price }) => (
             <Col key={id} xs={24} sm={12} md={8} lg={6}>
               <StyledCard hoverable>
-                {image && <img src={image} />}
+              {image && (
+                <StorageImage
+                alt='none'
+                path={`${image}`}
+                style={{ borderRadius: "10px", marginBottom: "10px", width: "100%", height: "200px", objectFit: "cover" }}
+                />
+              )}
+
                 <h3>{title}</h3>
                 <p>{description}</p>
                 <p style={{ fontWeight: "bold" }}>{price} USD</p>
