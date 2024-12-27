@@ -5,6 +5,8 @@ import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/data";
 import outputs from "../../../amplify_outputs.json";
 import type { Schema } from "../../../amplify/data/resource";
+import { FileUploader } from '@aws-amplify/ui-react-storage';
+import '@aws-amplify/ui-react/styles.css';
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
@@ -128,11 +130,12 @@ const Login = () => {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
+            <FileUploader
+            acceptedFileTypes={['image/*']}
+            path="public/"
+            autoUpload={false}
+            maxFileCount={3}
+            isResumable
             />
             <button onClick={handleSubmit}>Save Item</button>
           </FormContainer>
