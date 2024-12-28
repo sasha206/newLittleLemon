@@ -93,6 +93,10 @@ const Lemon = styled.div`
     width: 30px;
     height: 30px;
   }
+  @media (max-width: 768px) {
+    right: 20px;
+    left: auto;
+  }
 `;
 
 const NavBarLogin = () => {

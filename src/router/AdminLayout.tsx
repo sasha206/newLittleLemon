@@ -8,7 +8,7 @@ const AdminLayout = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Header />
-      <Authenticator>
+      <Authenticator signUpAttributes={['preferred_username']}>
       <div style={{ display: 'flex', flex: 1 }}>
 
       <NavBarLogin />
