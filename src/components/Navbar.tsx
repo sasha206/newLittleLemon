@@ -8,7 +8,7 @@ const Navbar = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 0;
+  padding: 10px 0;
   margin: 0 120px;
 
   @media (max-width: 768px) {
@@ -131,7 +131,7 @@ const NavBar = () => {
           <div></div>
         </BurgerButton>
         <UlStyled id="menu">
-          <NavItem><LinkStyled to="/about">About</LinkStyled></NavItem>
+          <NavItem><LinkStyled to="/">About</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/menu">Menu</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/reservations">Reservations</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/login">Login</LinkStyled></NavItem>

@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
 
 const FooterWrapper = styled.div`
     background-color: #ADB6C4;
@@ -20,7 +19,7 @@ const FooterText = styled.p`
 
 const ContainerSocialLinks = styled.div`
     display:flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 `
 const SocialLinks = styled.div`
@@ -48,23 +47,6 @@ const SocialLinks = styled.div`
     }
 `;
 
-const AdminLink = styled(NavLink)`
-  color: black;
-  text-decoration: none;
-  padding: 5px 10px;
-  border-radius: 11px;
-  font-family: 'Karla', sans-serif;
-  background-color: #BBBBBB;
-
-  &:hover {
-    background-color: #6e6e6e;
-  }
-
-  &:active {
-    background-color: #6e6e6e;
-    color: white;
-  }
-`
 
 const Footer = () => {
     return (
@@ -85,9 +67,6 @@ const Footer = () => {
                         <img src="/Instagram_Glyph_White.png" alt="Instagram" />
                     </a>
                 </SocialLinks>
-                    <div>
-                        <AdminLink to={'/admin_panel'}>Admin panel</AdminLink>
-                    </div>
                 </ContainerSocialLinks>
 
             </footer>

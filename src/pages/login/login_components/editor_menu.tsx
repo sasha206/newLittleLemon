@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/data";
-import outputs from "../../../amplify_outputs.json";
-import type { Schema } from "../../../amplify/data/resource";
+import outputs from "../../../../amplify_outputs.json";
+import type { Schema } from "../../../../amplify/data/resource";
 import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
@@ -66,7 +66,7 @@ const FileUploaderContainer = styled.div`
   margin: 0 auto;
 `;
 
-const Login = () => {
+const Editor_menu = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -88,7 +88,7 @@ const Login = () => {
       const { data: newItem } = await client.models.ItemMenu.create({
         title,
         description,
-        price, // Преобразование строки в число
+        price,
         image,
       });
       console.log("New Item Created:", newItem);
@@ -196,4 +196,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Editor_menu;
