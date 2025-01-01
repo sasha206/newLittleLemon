@@ -192,7 +192,6 @@ const EditorMenu = () => {
       setPrice("");
       setImage("");
       setCategory1("");
-      setCategory2([]);
       fetchMenu();
     } catch (error) {
       console.error("Error creating item:", error);
