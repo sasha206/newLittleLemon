@@ -134,7 +134,7 @@ const NavBar = () => {
           <NavItem><LinkStyled to="/">About</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/menu">Menu</LinkStyled></NavItem>
           <NavItem><LinkStyled to="/reservations">Reservations</LinkStyled></NavItem>
-          <NavItem><LinkStyled to="/login">Login</LinkStyled></NavItem>
+          <NavItem><LinkStyled to="/login">Account</LinkStyled></NavItem>
         </UlStyled>
       </Navbar>
     </DivNav>

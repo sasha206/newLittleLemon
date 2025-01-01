@@ -5,9 +5,20 @@ const schema = a.schema({
       title: a.string(),
       description: a.string(),
       image: a.string(),
-      price: a.string()
+      price: a.string(),
+      category1: a.string(),
+      category2: a.string().array(),
     })
-    .authorization(allow => [allow.publicApiKey()])
+    .authorization(allow => [allow.publicApiKey()]),
+  Category1: a.model({
+      categoryName1: a.string(),
+
+  })
+    .authorization(allow => [allow.publicApiKey()]),
+  Category2: a.model({
+      categoryName2: a.string(),
+  })
+    .authorization(allow => [allow.publicApiKey()]),
 });
 
 // Used for code completion / highlighting when making requests from frontend
