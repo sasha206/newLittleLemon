@@ -9,6 +9,7 @@ import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
 import { Card, Row, Col } from "antd";
+import { Checkbox } from 'antd';
 
 
 Amplify.configure(outputs);
@@ -264,15 +265,9 @@ const EditorMenu = () => {
   const isFormValid1 = categoryName1;
   const isFormValid2 = categoryName2;
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checkedId = e.target.value;
-    if (e.target.checked) {
-      setCategory2([...category2, checkedId]);
-    } else {
-      setCategory2(category2.filter((id) => id !== checkedId));
-    }
-    console.log(setCategory2);
-  };
+    const handleCheckboxChange = (checkedValues: string[]) => {
+      setCategory2(checkedValues);
+    };
 
   return (
     <Authenticator>
@@ -309,18 +304,17 @@ const EditorMenu = () => {
               ))}
             </select>
             <legend>Please select your preferred category2:</legend>
-          {categories2.map((category2) => (
-            <div key={category2.id}>
-              <input
-                type="checkbox"
-                id={`${category2.id}`}
-                name="category2"
-                value={`${category2.categoryName2}`}
-                onChange={(e) => handleCheckboxChange(e)}
-              />
-              <label htmlFor={`${category2.id}`}>{category2.categoryName2}</label>
-            </div>
-          ))}
+      <Checkbox.Group
+  options={categories2
+    .filter((category) => category.categoryName2 !== null && category.categoryName2 !== undefined)
+    .map((category) => ({
+      label: category.categoryName2 as string,
+      value: category.categoryName2 as string,
+    }))} 
+  value={category2}
+  onChange={handleCheckboxChange}
+  style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
+/>
             <FileUploaderContainer>
               <FileUploader
                 onUploadStart={() => setIsUploading(true)}

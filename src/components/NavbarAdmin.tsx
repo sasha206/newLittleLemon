@@ -123,7 +123,7 @@ const NavBarLogin = () => {
       <Sidebar id="menuLogin">
         <UlStyled>
           <NavItem>
-            <LinkStyled to="/login/editor_menu">Menu</LinkStyled>
+            <LinkStyled to="/login/editor_menu">Menu Editor</LinkStyled>
           </NavItem>
           <NavItem>
             <LinkStyled to="/login/admin_panel">Admin</LinkStyled>

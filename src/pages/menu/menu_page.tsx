@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/data";
-import { Card, Row, Col } from "antd";
+import { Card, Row, Col, Checkbox, Radio } from "antd";
 import outputs from "../../../amplify_outputs.json";
 import type { Schema } from "../../../amplify/data/resource";
 import { StorageImage } from "@aws-amplify/ui-react-storage";
-import { Checkbox } from 'antd';
-import { Radio } from 'antd';
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
@@ -37,8 +35,7 @@ const StyledCard = styled(Card)<{ highlight?: boolean }>`
   ${(props) =>
     props.highlight &&
     `
-    border: 2px solid red;
-    background-color: #ffe6e6;
+    border: 3px solid green;
   `}
 
   img {
@@ -68,7 +65,7 @@ const StyledRadioGroup = styled(Radio.Group)`
     height: auto; 
     padding: 10px; 
     line-height: 1.2; 
-    flex: 1 0 calc(33.33% - 10px); 
+    flex: 1 0 calc(25% - 10px); 
   }
 
   @media (max-width: 768px) {
@@ -117,6 +114,7 @@ const Menu = () => {
     return selectedCategory1 ? item.category1 === selectedCategory1 : true;
   });
 
+
   const handleCheckboxChange = (checkedValues: string[]) => {
     setSelectedCategory2(checkedValues);
   };
@@ -124,7 +122,7 @@ const Menu = () => {
   return (
     <PageContainer>
       <div>
-        <button onClick={() => setSelectedCategory1('')}>Clear</button>
+        <button onClick={() => setSelectedCategory1('')}>All</button>
       </div>
       <Flex vertical gap="middle">
       <StyledRadioGroup
@@ -134,6 +132,8 @@ const Menu = () => {
             label: category.categoryName1 as string,
             value: category.categoryName1 as string,
           }))}
+          value={selectedCategory1}
+          onChange={(e) => setSelectedCategory1(e.target.value)}
         optionType="button"
         buttonStyle="solid"
       />
