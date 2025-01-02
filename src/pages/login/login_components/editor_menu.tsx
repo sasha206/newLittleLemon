@@ -410,7 +410,7 @@ const EditorMenu = () => {
             
                             <h3>{title}</h3>
                             <p>{description}</p>
-                            <p style={{ fontWeight: "bold" }}>{price} USD</p>
+                            <p style={{ fontWeight: "bold" }}>{price} ZŁ</p>
                             <p>{category1}</p>
                             <p>{category2}</p>
                             <button onClick={() => handleDelete(id)}>Delete</button>

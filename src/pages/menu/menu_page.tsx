@@ -6,6 +6,8 @@ import { Card, Row, Col } from "antd";
 import outputs from "../../../amplify_outputs.json";
 import type { Schema } from "../../../amplify/data/resource";
 import { StorageImage } from "@aws-amplify/ui-react-storage";
+import { Checkbox } from 'antd';
+import { Radio } from 'antd';
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
@@ -48,6 +50,40 @@ const StyledCard = styled(Card)<{ highlight?: boolean }>`
   }
 `;
 
+const Flex = styled.div<{ vertical?: boolean; gap?: string }>`
+  display: flex;
+  flex-direction: ${({ vertical }) => (vertical ? "column" : "row")};
+  gap: ${({ gap }) => (gap === "middle" ? "16px" : "8px")};
+  align-items: flex-start;
+`;
+
+const StyledRadioGroup = styled(Radio.Group)`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .ant-radio-button-wrapper {
+    white-space: normal; 
+    text-align: center; 
+    height: auto; 
+    padding: 10px; 
+    line-height: 1.2; 
+    flex: 1 0 calc(33.33% - 10px); 
+  }
+
+  @media (max-width: 768px) {
+    .ant-radio-button-wrapper {
+      flex: 1 0 calc(50% - 10px); 
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ant-radio-button-wrapper {
+      flex: 1 0 100%; 
+    }
+  }
+`;
+
 const Menu = () => {
   const [menuItems, setMenuItems] = useState<Schema["ItemMenu"]["type"][]>([]);
   const [menuCategories1, setMenuCategories1] = useState<Schema["Category1"]["type"][]>([]);
@@ -81,64 +117,41 @@ const Menu = () => {
     return selectedCategory1 ? item.category1 === selectedCategory1 : true;
   });
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checkedId = e.target.value;
-    if (e.target.checked) {
-      setSelectedCategory2([...selectedCategory2, checkedId]);
-    } else {
-      setSelectedCategory2(selectedCategory2.filter((id) => id !== checkedId));
-    }
-    console.log(selectedCategory2);
+  const handleCheckboxChange = (checkedValues: string[]) => {
+    setSelectedCategory2(checkedValues);
   };
 
   return (
     <PageContainer>
       <div>
         <button onClick={() => setSelectedCategory1('')}>Clear</button>
-        <input
-          type="radio"
-          id="category1-all"
-          name="category1"
-          value=""
-          checked={selectedCategory1 === null}
-          onChange={() => setSelectedCategory1('')}
-        />
-        <label htmlFor="category1-all">All</label>
       </div>
-      <form>
-        <fieldset>
-          <legend>Please select your preferred category1:</legend>
-          {menuCategories1.map((category) => (
-            <div key={category.id}>
-              <input
-                type="radio"
-                id={`${category.id}`}
-                name="category1"
-                value={`${category.categoryName1}`}
-                onChange={(e) => setSelectedCategory1(e.target.value)}
-              />
-              <label htmlFor={`${category.id}`}>{`${category.categoryName1}`}</label>
-            </div>
-          ))}
-        </fieldset>
-      </form>
-      <form>
-        <fieldset>
-          <legend>Please select your preferred category2:</legend>
-          {menuCategories2.map((category) => (
-            <div key={category.id}>
-              <input
-                type="checkbox"
-                id={`${category.id}`}
-                name="category2"
-                value={`${category.categoryName2}`}
-                onChange={(e) => handleCheckboxChange(e)}
-              />
-              <label htmlFor={`${category.id}`}>{category.categoryName2}</label>
-            </div>
-          ))}
-        </fieldset>
-      </form>
+      <Flex vertical gap="middle">
+      <StyledRadioGroup
+        options={menuCategories1
+          .filter((category) => category.categoryName1 !== null && category.categoryName1 !== undefined)
+          .map((category) => ({
+            label: category.categoryName1 as string,
+            value: category.categoryName1 as string,
+          }))}
+        optionType="button"
+        buttonStyle="solid"
+      />
+    </Flex>
+      <div>
+      <h3>Please select your preferred category2:</h3>
+      <Checkbox.Group
+  options={menuCategories2
+    .filter((category) => category.categoryName2 !== null && category.categoryName2 !== undefined)
+    .map((category) => ({
+      label: category.categoryName2 as string,
+      value: category.categoryName2 as string,
+    }))} 
+  value={selectedCategory2}
+  onChange={handleCheckboxChange}
+/>
+
+    </div>
 
       <MenuTitle>Our Menu</MenuTitle>
       {menuItems.length === 0 ? (
@@ -166,7 +179,7 @@ const Menu = () => {
                 )}
                 <h3>{title}</h3>
                 <p>{description}</p>
-                <p style={{ fontWeight: "bold" }}>{price} USD</p>
+                <p style={{ fontWeight: "bold" }}>{price} ZŁ</p>
                 <p>{category1}</p>
                 <p>{category2}</p>
               </StyledCard>
