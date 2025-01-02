@@ -283,11 +283,13 @@ const EditorMenu = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            <input
-              type="text"
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+            <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={6}
+            cols={30}
+            style={{ wordBreak: 'break-word', resize: 'none' }}
             />
             <input
               type="number"
@@ -401,7 +403,6 @@ const EditorMenu = () => {
                             style={{ borderRadius: "10px", marginBottom: "10px", width: "100%", height: "200px", objectFit: "cover" }}
                             />
                           )}
-            
                             <h3>{title}</h3>
                             <p>{description}</p>
                             <p style={{ fontWeight: "bold" }}>{price} ZŁ</p>
