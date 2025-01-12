@@ -5,8 +5,18 @@ import { Button } from "antd";
 
 const DivNav = styled.div`
   position: fixed;
-  z-index: 1000;
+  z-index: 1000; /* Элемент будет позади */
+  visibility: hidden; /* Элемент скрыт по умолчанию */
+  opacity: 0; /* Элемент полностью прозрачен */
+  transition: opacity 0.3s ease, visibility 0s 0.3s; /* Задержка на visibility */
+
+  &.active {
+    visibility: visible; /* Элемент становится видимым */
+    opacity: 1; /* Элемент становится непрозрачным */
+    transition: opacity 0.3s ease, visibility 0s 0s; /* Без задержки для visibility */
+  }
 `;
+
 
 const Sidebar = styled.nav`
   top: 0;
@@ -78,6 +88,8 @@ const CustomButton = styled(Button)`
 `;
 
 const Lemon = styled.div`
+  visibility: visible; /* Логотип всегда видимый */
+  opacity: 1;
   position: fixed;
   top: 20px;
   left: 20px;
@@ -86,13 +98,14 @@ const Lemon = styled.div`
   transition: transform 0.3s ease-in-out;
 
   &.active {
-    transform: rotate(45deg);
+    transform: rotate(45deg); /* Поворот логотипа */
   }
 
   img {
     width: 30px;
     height: 30px;
   }
+
   @media (max-width: 768px) {
     right: 20px;
     left: auto;
@@ -103,40 +116,48 @@ const NavBarLogin = () => {
   const toggleMenu = () => {
     const menuLogin = document.getElementById('menuLogin');
     const lemonLogo = document.getElementById('lemonLogo');
+    const divNav = document.getElementById('divNav');  // добавляем id для DivNav
+    
     if (menuLogin) {
       menuLogin.classList.toggle('active');
     }
     if (lemonLogo) {
       lemonLogo.classList.toggle('active');
     }
+    if (divNav) {
+      divNav.classList.toggle('active');  // управляем видимостью DivNav
+    }
   };
+  
 
   async function buttonSignOut() {
     await signOut({ global: true });
   }
 
   return (
-    <DivNav>
-      <Lemon id="lemonLogo" onClick={toggleMenu}>
-        <img src="/icons8-lemon-100.png" alt="Menu Icon" />
-      </Lemon>
-      <Sidebar id="menuLogin">
-        <UlStyled>
-          <NavItem>
-            <LinkStyled to="/login/editor_menu">Menu Editor</LinkStyled>
-          </NavItem>
-          <NavItem>
-            <LinkStyled to="/login/admin_panel">Admin</LinkStyled>
-          </NavItem>
-          <NavItem>
-            <LinkStyled to="/login/analytics_page">Analytics</LinkStyled>
-          </NavItem>
-          <NavItem>
-            <CustomButton onClick={buttonSignOut}>Sign out</CustomButton>
-          </NavItem>
-        </UlStyled>
-      </Sidebar>
-    </DivNav>
+    <div>
+  <Lemon id="lemonLogo" onClick={toggleMenu}>
+    <img src="/icons8-lemon-100.png" alt="Menu Icon" />
+  </Lemon>
+<DivNav id="divNav">
+  <Sidebar id="menuLogin">
+    <UlStyled>
+      <NavItem>
+        <LinkStyled to="/login/editor_menu">Menu Editor</LinkStyled>
+      </NavItem>
+      <NavItem>
+        <LinkStyled to="/login/admin_panel">Admin</LinkStyled>
+      </NavItem>
+      <NavItem>
+        <LinkStyled to="/login/analytics_page">Analytics</LinkStyled>
+      </NavItem>
+      <NavItem>
+        <CustomButton onClick={buttonSignOut}>Sign out</CustomButton>
+      </NavItem>
+    </UlStyled>
+  </Sidebar>
+</DivNav>
+</div>
   );
 };
 

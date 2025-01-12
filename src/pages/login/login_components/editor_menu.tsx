@@ -10,7 +10,7 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
 import { Card, Row, Col } from "antd";
 import { Checkbox } from 'antd';
-
+import imageCompression from "browser-image-compression";
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
@@ -161,6 +161,40 @@ const EditorMenu = () => {
   const [categories2, setCategories2] = useState<Schema["Category2"]["type"][]>([]);
   const [category1, setCategory1] = useState("");
   const [category2, setCategory2] = useState<string[]>([]);
+
+  const compressImage = async (file: File) => {
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 800, 
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      const fileWithMetadata = new File([compressedFile], file.name, {
+        type: compressedFile.type,
+        lastModified: Date.now(),
+      });
+
+      return fileWithMetadata;
+    } catch (error) {
+      console.error("Error during image compression", error);
+      throw error;
+    }
+  };
+
+  const processFile = async ({ key, file }: { key: string, file: File }) => {
+    try {
+      const compressedFile = await compressImage(file);
+
+      return { key, file: compressedFile };
+    } catch (error) {
+      console.error("Error during file processing", error);
+      return { key, file };
+    }
+  };
+
+  
 
   const fetchMenu = async () => {
     try {
@@ -328,6 +362,7 @@ const EditorMenu = () => {
                   setIsUploading(false);
                 }}
                 maxFileCount={1}
+                processFile={processFile}
                 isResumable
               />
             </FileUploaderContainer>
