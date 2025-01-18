@@ -16,5 +16,11 @@ export const auth = defineAuth({
   access: (allow) => [
     allow.resource(postConfirmation).to(["addUserToGroup"]),
   ],
+  userAttributes: {
+    preferredUsername: {
+      mutable: true,
+      required: true,
+    }
+  },
 
 });
