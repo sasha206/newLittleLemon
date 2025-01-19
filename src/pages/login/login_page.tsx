@@ -12,7 +12,7 @@ Amplify.configure(outputs);
 
 const Login = () => {
   const [name, setName] = useState<string | undefined>();
-  const [group, setGroup] = useState<string[] | undefined>();
+  const [group, setGroup] = useState<any | undefined>();
 
   useEffect(() => {
     async function fetchAttributesAndSetName() {
@@ -21,9 +21,9 @@ const Login = () => {
         const preferredName = userAttributes["preferred_username"];
         setName(preferredName);
         console.log("name user:", preferredName);
-        const userSession = await fetchAuthSession();
-        const GroupUser = userSession.tokens?.accessToken.payload["cognito:groups"] as string[] | undefined;
-        setGroup(GroupUser);
+        const { tokens } = await fetchAuthSession();
+        setGroup(tokens?.accessToken.payload["cognito:groups"] ?? []);
+        
         
         console.log("group user:", group);
       } catch (error) {
