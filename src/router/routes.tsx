@@ -10,7 +10,6 @@ import Order from '../pages/order/order_page';
 import AdminPanel from '../pages/admin_panel/admin_panel_page';
 import EditorMenu from '../pages/login/login_components/editor_menu';
 import Analytics_page from '../pages/login/login_components/analytics_page';
-
 export const router = createBrowserRouter([
   {
     path: '/',
