@@ -60,7 +60,8 @@ const Admin_panel = () => {
       {({ user }) => (
         <div>
           <h1>Welcome, {name || "loading..."}</h1>
-          <h1>Your account ID: {user?.username}</h1>
+          <h1>Your account ID-username: {user?.username}</h1>
+          <h1>Your account ID: {user?.userId}</h1>
           <h1>Your groups: {group?.join(", ") || "loading..."}</h1>
 
           <div>

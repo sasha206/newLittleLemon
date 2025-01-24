@@ -25,7 +25,7 @@ const schema = a.schema({
       userId: a.string().required(),
       groupName: a.string().required(),
     })
-    .authorization((allow) => [allow.group("admins")])
+    .authorization((allow) => [allow.group("users")])
     .handler(a.handler.function(addUserToGroup))
     .returns(a.json())
 });
@@ -37,7 +37,7 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'apiKey',
+    defaultAuthorizationMode: 'userPool',
     apiKeyAuthorizationMode: { expiresInDays: 30 }
   }
 });
