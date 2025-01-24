@@ -12,7 +12,7 @@ Amplify.configure(outputs);
 
 const Login = () => {
   const [name, setName] = useState<string | undefined>();
-  const [group, setGroup] = useState<any>();
+  const [group, setGroup] = useState<any | undefined>();
 
   useEffect(() => {
     async function fetchAttributesAndSetName() {
@@ -22,16 +22,19 @@ const Login = () => {
         setName(preferredName);
         console.log("name user:", preferredName);
         const { tokens } = await fetchAuthSession();
-        setGroup(tokens?.accessToken.payload["cognito:groups"]);
-        
-        
-        console.log("group user:", group);
+        const groups = tokens?.accessToken.payload["cognito:groups"] as string[];
+        if (Array.isArray(groups)) {
+            setGroup(groups as string[]); // Приведение, если вы уверены в структуре
+        }
       } catch (error) {
         console.error("error:", error);
       }
     }
     fetchAttributesAndSetName();
   }, []);
+  useEffect(() => {
+    console.log("Group изменилось:", group); // Срабатывает при каждом обновлении group
+  }, [group]);
 
   return (
     <Authenticator>
