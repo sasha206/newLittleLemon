@@ -27,7 +27,7 @@ const Admin_panel = () => {
 
         const { tokens } = await fetchAuthSession();
         const groups = tokens?.accessToken.payload["cognito:groups"] as string[];
-        console.log("groups: ", tokens?.accessToken.payload["cognito:groups"])
+        console.log("groups: ", tokens?.accessToken.payload["cognito:groups"]);
         if (Array.isArray(groups)) {
           setGroup(groups);
         }
@@ -54,9 +54,30 @@ const Admin_panel = () => {
         groupName,
         userId,
       });
-      
     } catch (error) {
       console.error("Error adding user to group:", error);
+      alert("Check console for errors.");
+    }
+  };
+
+  const handleRemoveUserFromGroup = async (userId: string) => {
+    if (!groupName.trim()) {
+      alert("Please provide a group name.");
+      return;
+    }
+
+    try {
+      await client.mutations.removeUserFromGroup({
+        groupName,
+        userId,
+      });
+      alert(`User with ID ${userId} successfully removed from group ${groupName}!`);
+      console.log("Removing user from group with data:", {
+        groupName,
+        userId,
+      });
+    } catch (error) {
+      console.error("Error removing user from group:", error);
       alert("Check console for errors.");
     }
   };
@@ -91,6 +112,18 @@ const Admin_panel = () => {
             }}
           >
             Add user to group
+          </button>
+
+          <button
+            onClick={() => {
+              if (user?.username) {
+                handleRemoveUserFromGroup(user.username);
+              } else {
+                alert("User ID is not available.");
+              }
+            }}
+          >
+            Remove user from group
           </button>
         </div>
       )}
