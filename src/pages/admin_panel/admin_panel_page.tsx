@@ -12,6 +12,12 @@ const client = generateClient<Schema>();
 
 Amplify.configure(outputs);
 
+const session = await fetchAuthSession();
+
+console.log("id token", session.tokens?.idToken)
+console.log("access token", session.tokens?.accessToken)
+console.log("groups: ", session.tokens?.accessToken.payload["cognito:groups"])
+
 const Admin_panel = () => {
   const [name, setName] = useState<string | undefined>();
   const [group, setGroup] = useState<string[] | undefined>();
@@ -49,6 +55,11 @@ const Admin_panel = () => {
         userId,
       });
       alert(`User with ID ${userId} successfully added to group ${groupName}!`);
+      console.log("Adding user to group with data:", {
+        groupName,
+        userId,
+      });
+      
     } catch (error) {
       console.error("Error adding user to group:", error);
       alert("Check console for errors.");
