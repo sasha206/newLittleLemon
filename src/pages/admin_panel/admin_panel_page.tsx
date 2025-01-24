@@ -12,12 +12,6 @@ const client = generateClient<Schema>();
 
 Amplify.configure(outputs);
 
-const session = await fetchAuthSession();
-
-console.log("id token", session.tokens?.idToken)
-console.log("access token", session.tokens?.accessToken)
-console.log("groups: ", session.tokens?.accessToken.payload["cognito:groups"])
-
 const Admin_panel = () => {
   const [name, setName] = useState<string | undefined>();
   const [group, setGroup] = useState<string[] | undefined>();
@@ -33,6 +27,7 @@ const Admin_panel = () => {
 
         const { tokens } = await fetchAuthSession();
         const groups = tokens?.accessToken.payload["cognito:groups"] as string[];
+        console.log("groups: ", tokens?.accessToken.payload["cognito:groups"])
         if (Array.isArray(groups)) {
           setGroup(groups);
         }
