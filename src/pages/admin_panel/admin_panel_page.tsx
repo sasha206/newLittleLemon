@@ -3,18 +3,19 @@ import { Amplify } from "aws-amplify";
 import outputs from "../../../amplify_outputs.json";
 import { Authenticator } from '@aws-amplify/ui-react';
 import { fetchUserAttributes } from 'aws-amplify/auth';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
-import type { Schema } from "../../../amplify/data/resource"
-import { generateClient } from "aws-amplify/data"
+import type { Schema } from "../../../amplify/data/resource";
+import { generateClient } from "aws-amplify/data";
 
-const client = generateClient<Schema>()
+const client = generateClient<Schema>();
 
 Amplify.configure(outputs);
+
 const Admin_panel = () => {
   const [name, setName] = useState<string | undefined>();
-  const [group, setGroup] = useState<any | undefined>();
+  const [group, setGroup] = useState<string[] | undefined>();
+  const [groupName, setGroupName] = useState<string>(""); // Название группы для добавления
 
   useEffect(() => {
     async function fetchAttributesAndSetName() {
@@ -22,32 +23,35 @@ const Admin_panel = () => {
         const userAttributes = await fetchUserAttributes();
         const preferredName = userAttributes["preferred_username"];
         setName(preferredName);
-        console.log("name user:", preferredName);
+        console.log("User name:", preferredName);
+
         const { tokens } = await fetchAuthSession();
         const groups = tokens?.accessToken.payload["cognito:groups"] as string[];
         if (Array.isArray(groups)) {
-            setGroup(groups as string[]);
+          setGroup(groups);
         }
       } catch (error) {
-        console.error("error:", error);
+        console.error("Error fetching attributes or session:", error);
       }
     }
     fetchAttributesAndSetName();
   }, []);
-  useEffect(() => {
-    console.log("Group change:", group);
-  }, [group]);
 
-  const handleAddUserToGroup = async () => {
+  const handleAddUserToGroup = async (userId: string) => {
+    if (!groupName.trim()) {
+      alert("Please provide a group name.");
+      return;
+    }
+
     try {
       await client.mutations.addUserToGroup({
-        groupName: "managers",
-        userId: "a0dcc9fc-5061-7035-ffeb-b5a7c5cf23e6",
+        groupName,
+        userId,
       });
-      alert("user successfully added!");
+      alert(`User with ID ${userId} successfully added to group ${groupName}!`);
     } catch (error) {
-      console.error("error adding user to group:", error);
-      alert("Check console on errors.");
+      console.error("Error adding user to group:", error);
+      alert("Check console for errors.");
     }
   };
 
@@ -56,14 +60,35 @@ const Admin_panel = () => {
       {({ user }) => (
         <div>
           <h1>Welcome, {name || "loading..."}</h1>
-          <h1>It's your ID account: {user?.username}</h1>
-          <h1>It's your group, {group || "loading..."}</h1>
-          <button onClick={handleAddUserToGroup}>Add user to group</button>
+          <h1>Your account ID: {user?.username}</h1>
+          <h1>Your groups: {group?.join(", ") || "loading..."}</h1>
+
+          <div>
+            <label htmlFor="groupName">Group Name:</label>
+            <input
+              id="groupName"
+              type="text"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              placeholder="Enter group name"
+            />
+          </div>
+
+          <button
+            onClick={() => {
+              if (user?.username) {
+                handleAddUserToGroup(user.username);
+              } else {
+                alert("User ID is not available.");
+              }
+            }}
+          >
+            Add user to group
+          </button>
         </div>
-
-
       )}
     </Authenticator>
   );
 };
+
 export default Admin_panel;
