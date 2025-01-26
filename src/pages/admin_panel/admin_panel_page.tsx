@@ -1,15 +1,15 @@
-import '@aws-amplify/ui-react/styles.css';
+import { useState, useEffect } from "react";
 import { Amplify } from "aws-amplify";
+import { Authenticator } from "@aws-amplify/ui-react";
 import outputs from "../../../amplify_outputs.json";
-import { Authenticator } from '@aws-amplify/ui-react';
-import { fetchUserAttributes } from 'aws-amplify/auth';
-import { useState, useEffect } from 'react';
-import { fetchAuthSession } from 'aws-amplify/auth';
+import { fetchUserAttributes } from "aws-amplify/auth";
+import { fetchAuthSession } from "aws-amplify/auth";
 import type { Schema } from "../../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 
-const client = generateClient<Schema>();
+import "@aws-amplify/ui-react/styles.css";
 
+const client = generateClient<Schema>();
 Amplify.configure(outputs);
 
 const Admin_panel = () => {
@@ -17,25 +17,32 @@ const Admin_panel = () => {
   const [group, setGroup] = useState<string[] | undefined>();
   const [groupName, setGroupName] = useState<string>(""); // Название группы для добавления
 
-  useEffect(() => {
-    async function fetchAttributesAndSetName() {
-      try {
-        const userAttributes = await fetchUserAttributes();
-        const preferredName = userAttributes["preferred_username"];
-        setName(preferredName);
-        console.log("User name:", preferredName);
-
-        const { tokens } = await fetchAuthSession();
-        const groups = tokens?.accessToken.payload["cognito:groups"] as string[];
-        console.log("groups: ", tokens?.accessToken.payload["cognito:groups"]);
-        if (Array.isArray(groups)) {
-          setGroup(groups);
-        }
-      } catch (error) {
-        console.error("Error fetching attributes or session:", error);
+  const fetchUserGroups = async () => {
+    try {
+      const { tokens } = await fetchAuthSession();
+      const groups = tokens?.accessToken.payload["cognito:groups"] as string[];
+      if (Array.isArray(groups)) {
+        setGroup(groups);
       }
+    } catch (error) {
+      console.error("Error fetching user groups:", error);
     }
-    fetchAttributesAndSetName();
+  };
+
+  const fetchAttributesAndGroups = async () => {
+    try {
+      const userAttributes = await fetchUserAttributes();
+      const preferredName = userAttributes["preferred_username"];
+      setName(preferredName);
+
+      await fetchUserGroups();
+    } catch (error) {
+      console.error("Error fetching user attributes or groups:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAttributesAndGroups();
   }, []);
 
   const handleAddUserToGroup = async (userId: string) => {
@@ -50,10 +57,7 @@ const Admin_panel = () => {
         userId,
       });
       alert(`User with ID ${userId} successfully added to group ${groupName}!`);
-      console.log("Adding user to group with data:", {
-        groupName,
-        userId,
-      });
+      await fetchUserGroups(); // Обновляем список групп
     } catch (error) {
       console.error("Error adding user to group:", error);
       alert("Check console for errors.");
@@ -72,10 +76,7 @@ const Admin_panel = () => {
         userId,
       });
       alert(`User with ID ${userId} successfully removed from group ${groupName}!`);
-      console.log("Removing user from group with data:", {
-        groupName,
-        userId,
-      });
+      await fetchUserGroups(); // Обновляем список групп
     } catch (error) {
       console.error("Error removing user from group:", error);
       alert("Check console for errors.");
@@ -132,3 +133,4 @@ const Admin_panel = () => {
 };
 
 export default Admin_panel;
+
