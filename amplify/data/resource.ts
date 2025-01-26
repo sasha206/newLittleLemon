@@ -11,16 +11,16 @@ const schema = a.schema({
       category1: a.string(),
       category2: a.string().array(),
     })
-    .authorization(allow => [allow.publicApiKey()]),
+    .authorization(allow => [allow.group("admins")]),
   Category1: a.model({
       categoryName1: a.string(),
 
   })
-    .authorization(allow => [allow.publicApiKey()]),
+    .authorization(allow => [allow.group("admins")]),
   Category2: a.model({
       categoryName2: a.string(),
   })
-    .authorization(allow => [allow.publicApiKey()]),
+    .authorization(allow => [allow.group("admins")]),
   addUserToGroup: a
     .mutation().arguments({
       userId: a.string().required(),
