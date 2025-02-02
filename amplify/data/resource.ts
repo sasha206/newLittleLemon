@@ -2,6 +2,7 @@ import { a, defineData, type ClientSchema } from '@aws-amplify/backend';
 import { addUserToGroup } from './add-user-to-group/resource';
 import { removeUserFromGroup } from './remove-user-from-group/resource';
 import { listUsers } from './list-users/resource';
+import { listGroupsForUser } from './list-groups-for-users/resource';
 
 const schema = a.schema({
   ItemMenu: a.model({
@@ -45,7 +46,7 @@ const schema = a.schema({
       userId: a.string().required(),
       groupName: a.string().required(),
     })
-    .authorization((allow) => [allow.group("users"),])
+    .authorization((allow) => [allow.group("users"), allow.authenticated()])
     .handler(a.handler.function(addUserToGroup))
     .returns(a.json()),
   removeUserFromGroup: a
@@ -62,7 +63,14 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.group("users")])
     .handler(a.handler.function(listUsers))
-    .returns(a.json())
+    .returns(a.json()),
+  listGroupsForUser: a
+    .mutation().arguments({
+      username: a.string().required()
+    })
+    .authorization((allow) => [allow.group("users")])
+    .handler(a.handler.function(listGroupsForUser))
+    .returns(a.json()),
 });
 
 // Used for code completion / highlighting when making requests from frontend

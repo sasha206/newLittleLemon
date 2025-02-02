@@ -12,8 +12,18 @@ import "@aws-amplify/ui-react/styles.css";
 export interface Root {
   $metadata: Metadata
   Users: User[]
+  Groups: Groups[]
+  NextToken: string
 }
-
+export interface Groups {
+  CreationDate: number
+  Description: string
+  GroupName: string
+  LastModifiedDate: number
+  Precedence: number
+  RoleArn: string
+  UserPoolId: string
+}
 export interface Metadata {
   httpStatusCode: number
   requestId: string
@@ -42,9 +52,10 @@ Amplify.configure(outputs);
 const Admin_panel = () => {
   const [name, setName] = useState<string | undefined>();
   const [group, setGroup] = useState<string[] | undefined>();
-  const [groupName, setGroupName] = useState<string>(""); // Название группы для добавления
-  const [userList, setUserList] = useState<{ Users: User[] }>({ Users: [] });
-
+  const [groupName, setGroupName] = useState<string>(""); 
+  const [userList, setUserList] = useState<User[]>([]);
+  const [userGroups, setUserGroups] = useState<{ [key: string]: Groups[] }>({});
+  const [loadingGroups, setLoadingGroups] = useState<string | null>(null);
 
   const fetchUserGroups = async () => {
     try {
@@ -97,10 +108,28 @@ const Admin_panel = () => {
         userId,
       });
       alert(`User with ID ${userId} successfully added to group ${groupName}!`);
-      await fetchUserGroups(); // Обновляем список групп
+      await fetchUserGroups();
     } catch (error) {
       console.error("Error adding user to group:", error);
       alert("Check console for errors.");
+    }
+  };
+
+  const fetchUserListGroups = async (sub: string) => {
+    setLoadingGroups(sub); // Показываем индикатор загрузки для конкретного пользователя
+    try {
+      const response = await client.mutations.listGroupsForUser({ username: sub });
+      if (response.data) {
+        const parsedData = JSON.parse(response.data as string);
+        setUserGroups(prev => ({ ...prev, [sub]: parsedData.Groups || [] }));
+      } else {
+        setUserGroups(prev => ({ ...prev, [sub]: [] }));
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке групп:", error);
+      setUserGroups(prev => ({ ...prev, [sub]: [] }));
+    } finally {
+      setLoadingGroups(null); // Убираем индикатор загрузки
     }
   };
 
@@ -119,7 +148,7 @@ const Admin_panel = () => {
         userId,
       });
       alert(`User with ID ${userId} successfully removed from group ${groupName}!`);
-      await fetchUserGroups(); // Обновляем список групп
+      await fetchUserGroups();
     } catch (error) {
       console.error("Error removing user from group:", error);
       alert("Check console for errors.");
@@ -127,22 +156,18 @@ const Admin_panel = () => {
   };
   
   const fetchUserList = async () => {
-  try {
-    const response = await client.mutations.listUsers({ attributes: 'preferred_username' });
-    console.log(response.data)
-
-    if (response.data) {
-      const parse = JSON.parse(response.data)
-      console.log("its parse: ", parse)
-      setUserList(parse);
-      console.log(userList);
-    } else {
-      console.log("null list");
+    try {
+      const response = await client.mutations.listUsers({ attributes: 'preferred_username' });
+      if (response.data) {
+        const parsedResponse: Root = JSON.parse(response.data as string);
+        setUserList(parsedResponse.Users);
+      } else {
+        console.log('null list');
+      }
+    } catch (error) {
+      console.log('error:', error);
     }
-  } catch (error) {
-    console.log("error:", error);
-  }
-};
+  };
 
 
   return (
@@ -193,19 +218,41 @@ const Admin_panel = () => {
           >
             Delete user
           </button>
-          {userList && userList.Users && userList.Users.length > 0 ? (
-      <ul>
-        {userList.Users.map((user) => (
-          <li key={user.Username}>
+          <div>
+      <h1>Список пользователей</h1>
+      {userList.length > 0 ? (
+        <ul>
+          {userList.map((user) => {
+            const preferredUsername = user.Attributes.find(attr => attr.Name === "preferred_username")?.Value;
+            const sub = user.Attributes.find(attr => attr.Name === "sub")?.Value;
+            const groups = userGroups[sub || ''] || [];
 
-            your Name: {user.Attributes.find(attr => attr.Name === 'preferred_username')?.Value || 'Unknown'},
-            your Id: {user.Attributes.find(attr => attr.Name === 'sub')?.Value || 'Unknown'}
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p>Unknown users.</p>
-    )}
+            return (
+              <li key={user.Username}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>{preferredUsername || "Имя не указано"}</span>
+                  <button onClick={() => fetchUserListGroups(sub || '')}>
+                    Показать группы
+                  </button>
+                </div>
+
+                {loadingGroups === sub && <p>Загрузка групп...</p>}
+
+                {groups.length > 0 && (
+                  <ul>
+                    {groups.map((group) => (
+                      <li key={group.GroupName}>{group.GroupName}</li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p>Загрузка пользователей...</p>
+      )}
+    </div>
         </div>
       )}
     </Authenticator>
