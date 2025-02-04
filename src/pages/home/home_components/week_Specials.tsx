@@ -5,15 +5,28 @@ const WeekSpecialsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: #f8f8f8;
+  padding: 40px 20px;
+  background-color: #fff;
 `;
 
 const Title = styled.h2`
   color: #333;
   font-family: 'Markazi Text', serif;
-  font-size: 36px;
-  margin-bottom: 20px;
+  font-size: 42px;
+  margin-bottom: 30px;
+  text-align: center;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: #f4ce14;
+  }
 `;
 
 const SpecialsGrid = styled.div`
@@ -26,23 +39,25 @@ const SpecialsGrid = styled.div`
 
 const SpecialCard = styled.div`
   background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  width: 250px;
-  padding: 16px;
+  border-radius: 16px;
+  width: 280px;
+  padding: 20px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 
   &:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
 `;
 
 const SpecialImage = styled.img`
   width: 100%;
-  height: 150px;
+  height: 180px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 12px;
+  margin-bottom: 15px;
 `;
 
 const SpecialName = styled.h3`

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/data";
-import { Card, Row, Col, Checkbox, Radio } from "antd";
+import { Card, Row, Col, Checkbox, Radio, Spin, Button } from "antd";
 import outputs from "../../../amplify_outputs.json";
 import type { Schema } from "../../../amplify/data/resource";
 import { StorageImage } from "@aws-amplify/ui-react-storage";
@@ -14,6 +14,28 @@ const PageContainer = styled.div`
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
+  
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+`;
+
+const FilterSection = styled.div`
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+`;
+
+const CategoryTitle = styled.h3`
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #333;
 `;
 
 const MenuTitle = styled.h1`
@@ -24,19 +46,27 @@ const MenuTitle = styled.h1`
 
 const StyledCard = styled(Card)<{ highlight?: boolean }>`
   margin: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
   
   .ant-card-body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20px;
   }
   
   ${(props) =>
     props.highlight &&
     `
-    border: 3px solid green;
-  `}
+    border: 3px solid #52c41a;
+    transform: scale(1.02);
+    `}
 
   img {
     border-radius: 10px;
@@ -81,7 +111,18 @@ const StyledRadioGroup = styled(Radio.Group)`
   }
 `;
 
+const ResetButton = styled(Button)`
+  margin-bottom: 15px;
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+
+  &:hover {
+    background-color: #e8e8e8;
+  }
+`;
+
 const Menu = () => {
+  const [loading, setLoading] = useState(true);
   const [menuItems, setMenuItems] = useState<Schema["ItemMenu"]["type"][]>([]);
   const [menuCategories1, setMenuCategories1] = useState<Schema["Category1"]["type"][]>([]);
   const [menuCategories2, setMenuCategories2] = useState<Schema["Category2"]["type"][]>([]);
@@ -90,14 +131,17 @@ const Menu = () => {
 
   const fetchMenu = async () => {
     try {
-      const { data: items } = await client.models.ItemMenu.list();
+      setLoading(true);
+      const { data: items } = await client.models.ItemMenu.list({authMode: 'identityPool'});
       setMenuItems(items);
-      const { data: items1 } = await client.models.Category1.list();
+      const { data: items1 } = await client.models.Category1.list({authMode: 'identityPool'});
       setMenuCategories1(items1);
-      const { data: items2 } = await client.models.Category2.list();
+      const { data: items2 } = await client.models.Category2.list({authMode: 'identityPool'});
       setMenuCategories2(items2);
     } catch (error) {
       console.error("Error fetching menu items:", error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -121,41 +165,62 @@ const Menu = () => {
 
   return (
     <PageContainer>
-      <div>
-        <button onClick={() => setSelectedCategory1('')}>All</button>
-      </div>
-      <Flex vertical gap="middle">
-      <StyledRadioGroup
-        options={menuCategories1
-          .filter((category) => category.categoryName1 !== null && category.categoryName1 !== undefined)
-          .map((category) => ({
-            label: category.categoryName1 as string,
-            value: category.categoryName1 as string,
-          }))}
-          value={selectedCategory1}
-          onChange={(e) => setSelectedCategory1(e.target.value)}
-        optionType="button"
-        buttonStyle="solid"
-      />
-    </Flex>
-      <div>
-      <h3>Please select your preferred category2:</h3>
-      <Checkbox.Group
-  options={menuCategories2
-    .filter((category) => category.categoryName2 !== null && category.categoryName2 !== undefined)
-    .map((category) => ({
-      label: category.categoryName2 as string,
-      value: category.categoryName2 as string,
-    }))} 
-  value={selectedCategory2}
-  onChange={handleCheckboxChange}
-/>
+      <FilterSection>
+        <ResetButton 
+          onClick={() => {
+            setSelectedCategory1('');
+            setSelectedCategory2([]);
+          }}
+        >
+          Reset Filters
+        </ResetButton>
+        
+        <CategoryTitle>Main Categories</CategoryTitle>
+        <Flex vertical gap="middle">
+          <StyledRadioGroup
+            options={menuCategories1
+              .filter((category) => category.categoryName1 !== null && category.categoryName1 !== undefined)
+              .map((category) => ({
+                label: category.categoryName1 as string,
+                value: category.categoryName1 as string,
+              }))}
+              value={selectedCategory1}
+              onChange={(e) => setSelectedCategory1(e.target.value)}
+            optionType="button"
+            buttonStyle="solid"
+          />
+        </Flex>
 
-    </div>
+        <CategoryTitle>Dietary Preferences</CategoryTitle>
+        <Checkbox.Group
+          style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}
+          options={menuCategories2
+            .filter((category) => category.categoryName2 !== null && category.categoryName2 !== undefined)
+            .map((category) => ({
+              label: category.categoryName2 as string,
+              value: category.categoryName2 as string,
+            }))} 
+          value={selectedCategory2}
+          onChange={handleCheckboxChange}
+        />
+      </FilterSection>
 
       <MenuTitle>Our Menu</MenuTitle>
-      {menuItems.length === 0 ? (
-        <p style={{ textAlign: "center" }}>No items available in the menu.</p>
+      
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          <Spin size="large" />
+        </div>
+      ) : menuItems.length === 0 ? (
+        <div style={{ 
+          textAlign: "center", 
+          padding: '40px', 
+          background: '#f5f5f5',
+          borderRadius: '12px'
+        }}>
+          <h3>No items available</h3>
+          <p>Please try different filter options</p>
+        </div>
       ) : (
         <Row gutter={[16, 16]}>
           {filteredMenuItems1.map(({ id, title, description, image, price, category1, category2 }) => (
@@ -166,22 +231,46 @@ const Menu = () => {
               >
                 {image && (
                   <StorageImage
-                    alt="none"
+                    alt={title || 'Menu item'}
                     path={`${image}`}
                     style={{
-                      borderRadius: "10px",
-                      marginBottom: "10px",
+                      borderRadius: "12px",
+                      marginBottom: "15px",
                       width: "100%",
                       height: "200px",
                       objectFit: "cover",
                     }}
                   />
                 )}
-                <h3>{title}</h3>
-                <p>{description}</p>
-                <p style={{ fontWeight: "bold" }}>{price} ZŁ</p>
-                <p>{category1}</p>
-                <p>{category2}</p>
+                <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{title}</h3>
+                <p style={{ 
+                  color: '#666', 
+                  textAlign: 'center',
+                  marginBottom: '15px',
+                  minHeight: '40px'
+                }}>{description}</p>
+                <p style={{ 
+                  fontWeight: "bold",
+                  fontSize: '1.1rem',
+                  color: '#52c41a'
+                }}>{price} ZŁ</p>
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '5px',
+                  flexWrap: 'wrap',
+                  justifyContent: 'center'
+                }}>
+                  {category2?.map((cat, index) => (
+                    <span key={index} style={{
+                      background: '#f0f0f0',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.8rem'
+                    }}>
+                      {cat}
+                    </span>
+                  ))}
+                </div>
               </StyledCard>
             </Col>
           ))}

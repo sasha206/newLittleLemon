@@ -7,18 +7,20 @@ const CustomButton = styled(Button)`
   border: none;
   color: black;
   font-size: 18px;
-  text-decoration: none;
-  border-radius: 11px;
-  margin-left: 6px;
+  padding: 12px 30px;
+  border-radius: 30px;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+
   &:hover {
-    background-color: #bbbbbb;
+    background-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   }
   
-  /* Мобильная версия */
   @media (max-width: 768px) {
     font-size: 16px;
-    padding: 8px 16px;
-    margin-left: 0;
+    padding: 10px 25px;
   }
 `;
 
@@ -68,6 +70,19 @@ const Paragraph = styled.p`
 const HomeStyled = styled.div`
   background-color: rgb(73, 94, 87);
   margin-bottom: 1vh;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
+    z-index: 1;
+  }
 `;
 
 const BackgroundHeaderStyled = styled.header`
@@ -82,16 +97,16 @@ const BackgroundHeaderStyled = styled.header`
 const HeaderStyled = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: top;
-  margin: 0 120px;
-  padding: 40px 0;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 60px 20px;
+  position: relative;
+  z-index: 2;
 
-  /* Мобильная версия */
   @media (max-width: 768px) {
     flex-direction: column;
-    align-items: center;
-    margin: 0 20px;
-    padding: 20px 0;
+    padding: 30px 20px;
   }
 `;
 

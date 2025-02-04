@@ -8,29 +8,55 @@ import type { Schema } from "../../../../amplify/data/resource";
 import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
-import { Card, Row, Col } from "antd";
+import { Card, Row, Col, Tabs, Spin, message } from "antd";
 import { Checkbox } from 'antd';
 import imageCompression from "browser-image-compression";
+
+const theme = {
+  colors: {
+    primary: '#495E57',
+    secondary: '#F4CE14',
+    background: '#F5F7FA',
+    text: '#333333',
+    border: '#E2E8F0',
+    error: '#E53E3E',
+    success: '#38A169'
+  }
+};
 
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 const StyledCard = styled(Card)`
-  margin: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
 
-  .ant-card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  img {
-    border-radius: 10px;
-    margin-bottom: 10px;
+  .ant-card-body {
+    padding: 1.5rem;
+  }
+
+  .card-image {
+    height: 200px;
     width: 100%;
-    max-height: 200px;
     object-fit: cover;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+
+  .card-price {
+    color: ${theme.colors.primary};
+    font-weight: bold;
+    font-size: 1.1rem;
   }
 `;
 
@@ -63,33 +89,43 @@ const LayoutContainerCategory = styled.div`
 `;
 
 const FormContainer = styled.div`
-  text-align: center;
-  margin: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  input {
-    display: block;
-    margin: 10px auto;
-    padding: 10px;
-    width: 80%;
-    max-width: 300px;
+  input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid ${theme.colors.border};
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: ${theme.colors.primary};
+      box-shadow: 0 0 0 2px rgba(73, 94, 87, 0.2);
+    }
   }
 
   button {
-    padding: 10px 20px;
-    margin-top: 10px;
-    background-color: #007bff;
+    width: 100%;
+    padding: 12px;
+    background: ${theme.colors.primary};
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-size: 1rem;
     cursor: pointer;
+    transition: background 0.3s ease;
 
     &:hover {
-      background-color: #0056b3;
-    }
-
-    &:disabled {
-      background-color: #ddd;
-      cursor: not-allowed;
+      background: ${theme.colors.secondary};
+      color: ${theme.colors.text};
     }
   }
 `;
@@ -148,17 +184,137 @@ const FileUploaderContainer = styled.div`
   margin: 0 auto;
 `;
 
+const DashboardContainer = styled.div`
+  min-height: 100vh;
+  background: ${theme.colors.background};
+  padding: 2rem;
+`;
+
+const TabContainer = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-top: 2rem;
+`;
+
+const CategoryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+`;
+
+const MenuGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+`;
+
+const CategoryList = styled.div`
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 1rem;
+  border: 1px solid ${theme.colors.border};
+  border-radius: 8px;
+  padding: 0.5rem;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${theme.colors.background};
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${theme.colors.primary};
+    border-radius: 4px;
+  }
+`;
+
+const CategoryItem = styled.div`
+  position: relative;
+  padding: 0.75rem;
+  border-bottom: 1px solid ${theme.colors.border};
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: ${theme.colors.background};
+
+    button {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  span {
+    flex-grow: 1;
+    margin-right: 1rem;
+    text-align: left;
+  }
+
+  button {
+    flex-shrink: 0;
+    width: auto;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.2s ease;
+    background-color: ${theme.colors.error};
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+
+    &:hover {
+      background-color: ${theme.colors.error};
+      opacity: 0.9;
+    }
+  }
+`;
+
+interface MenuItem {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
+  image: string;
+  category1: string;
+  category2: string[];
+}
+
+interface Category1 {
+  id: string;
+  categoryName1: string;
+}
+
+interface Category2 {
+  id: string;
+  categoryName2: string;
+}
+
 const EditorMenu = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [menuItems, setMenuItems] = useState<Schema["ItemMenu"]["type"][]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categoryName1, setCategoryName1] = useState("");
   const [categoryName2, setCategoryName2] = useState("");
-  const [categories1, setCategories1] = useState<Schema["Category1"]["type"][]>([]);
-  const [categories2, setCategories2] = useState<Schema["Category2"]["type"][]>([]);
+  const [categories1, setCategories1] = useState<Category1[]>([]);
+  const [categories2, setCategories2] = useState<Category2[]>([]);
   const [category1, setCategory1] = useState("");
   const [category2, setCategory2] = useState<string[]>([]);
 
@@ -183,10 +339,9 @@ const EditorMenu = () => {
     }
   };
 
-  const processFile = async ({ key, file }: { key: string, file: File }) => {
+  const processFile = async ({ key, file }: { key: string; file: File }): Promise<{ key: string; file: File }> => {
     try {
       const compressedFile = await compressImage(file);
-
       return { key, file: compressedFile };
     } catch (error) {
       console.error("Error during file processing", error);
@@ -194,16 +349,16 @@ const EditorMenu = () => {
     }
   };
 
-  
-
   const fetchMenu = async () => {
     try {
       const { data: items } = await client.models.ItemMenu.list();
-      setMenuItems(items);
+      setMenuItems(items as MenuItem[]);
+      
       const { data: data_categories1 } = await client.models.Category1.list();
-      setCategories1(data_categories1);
+      setCategories1(data_categories1 as Category1[]);
+      
       const { data: data_categories2 } = await client.models.Category2.list();
-      setCategories2(data_categories2);
+      setCategories2(data_categories2 as Category2[]);
     } catch (error) {
       console.error("Error fetching items:", error);
     }
@@ -211,22 +366,23 @@ const EditorMenu = () => {
 
   const handleSubmit = async () => {
     try {
-      const { data: newItem } = await client.models.ItemMenu.create({
+      const newItem = {
         title,
         description,
         price,
         image,
         category1,
-        category2: category2,
-      });
-      console.log("New Item Created:", newItem);
-      console.log(category2)
-
+        category2,
+      };
+      
+      await client.models.ItemMenu.create(newItem);
+      
       setTitle("");
       setDescription("");
       setPrice("");
       setImage("");
       setCategory1("");
+      setCategory2([]);
       fetchMenu();
     } catch (error) {
       console.error("Error creating item:", error);
@@ -306,151 +462,154 @@ const EditorMenu = () => {
   return (
     <Authenticator>
       {({ user }) => (
-        <div>
-          <h1>Welcome, {user?.username}</h1>
-          <LayoutContainer>
-          <FormContainer>
-            <h1>Add New Menu Item</h1>
-            <input
-              type="text"
-              placeholder="Item Name"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <textarea
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={6}
-            cols={30}
-            style={{ wordBreak: 'break-word', resize: 'none' }}
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
-            <select value={category1} onChange={(e) => setCategory1(e.target.value)}>
-            <option value="" disabled>Select Main Category</option>
-              {categories1.map((category1, id) => (
-                <option key={id} value={`${category1.categoryName1}`}>
-                {category1.categoryName1}
-                </option>
-              ))}
-            </select>
-            <legend>Please select your preferred category2:</legend>
-      <Checkbox.Group
-  options={categories2
-    .filter((category) => category.categoryName2 !== null && category.categoryName2 !== undefined)
-    .map((category) => ({
-      label: category.categoryName2 as string,
-      value: category.categoryName2 as string,
-    }))} 
-  value={category2}
-  onChange={handleCheckboxChange}
-  style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
-/>
-            <FileUploaderContainer>
-              <FileUploader
-                onUploadStart={() => setIsUploading(true)}
-                acceptedFileTypes={['image/*']}
-                path="public/"
-                autoUpload={true}
-                onUploadSuccess={(event) => {
-                  setImage(event.key || '');
-                  setIsUploading(false);
-                }}
-                maxFileCount={1}
-                processFile={processFile}
-                isResumable
-              />
-            </FileUploaderContainer>
-            <button onClick={handleSubmit} disabled={!isFormValid}>Save Item</button>
-          </FormContainer>
-          <LayoutContainerCategory>
-          <FormCategoryContainer>
-            <h1>Add Category 1</h1>
-            <input
-              type="text"
-              placeholder="Category1 Name"
-              value={categoryName1}
-              onChange={(e) => setCategoryName1(e.target.value)}
-            />
-            <button onClick={handleSubmit1} disabled={!isFormValid1}>Save Category</button>
-          </FormCategoryContainer>
-          <FormCategoryContainer>
-            <h1>Add Category 2</h1>
-            <input
-              type="text"
-              placeholder="Category2 Name"
-              value={categoryName2}
-              onChange={(e) => setCategoryName2(e.target.value)}
-            />
-            <button onClick={handleSubmit2} disabled={!isFormValid2}>Save Category</button>
-          </FormCategoryContainer>
-          </LayoutContainerCategory>
-          <ScrollList>
-            <h2>Category 1 List</h2>
-            {categories1.length === 0 ? (
-              <p>No categories available.</p>
-            ) : (
-              categories1.map(({ id, categoryName1 }) => (
-                <MenuItem key={id}>
-                  <div>
-                    <h3>{categoryName1}</h3>
-                  </div>
-                  <button onClick={() => handleDelete1(id)}>Delete</button>
-                </MenuItem>
-              ))
-            )}
-          </ScrollList>
-          <ScrollList>
-            <h2>Category 2 List</h2>
-            {categories2.length === 0 ? (
-              <p>No categories available.</p>
-            ) : (
-              categories2.map(({ id, categoryName2 }) => (
-                <MenuItem key={id}>
-                  <div>
-                    <h3>{categoryName2}</h3>
-                  </div>
-                  <button onClick={() => handleDelete2(id)}>Delete</button>
-                </MenuItem>
-              ))
-            )}
-          </ScrollList>
+        <DashboardContainer>
+          <h1 style={{ color: theme.colors.primary, marginBottom: '1rem' }}>
+            Restaurant Dashboard
+          </h1>
+          
+          <Tabs defaultActiveKey="1">
+            <Tabs.TabPane tab="Add Menu Item" key="1">
+              <FormContainer>
+                <h2>Add New Menu Item</h2>
+                <input
+                  type="text"
+                  placeholder="Item Name"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <textarea
+                  placeholder="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                />
+                <select value={category1} onChange={(e) => setCategory1(e.target.value)}>
+                  <option value="" disabled>Select Main Category</option>
+                  {categories1.map((cat, idx) => (
+                    <option key={idx} value={cat.categoryName1}>
+                      {cat.categoryName1}
+                    </option>
+                  ))}
+                </select>
+                
+                <Checkbox.Group
+                  options={categories2
+                    .filter(cat => cat.categoryName2)
+                    .map(cat => ({
+                      label: cat.categoryName2 as string,
+                      value: cat.categoryName2 as string,
+                    }))}
+                  value={category2}
+                  onChange={handleCheckboxChange}
+                  style={{ margin: '1rem 0' }}
+                />
+                
+                <FileUploader
+                  onUploadStart={() => setIsUploading(true)}
+                  acceptedFileTypes={['image/*']}
+                  path="public/"
+                  autoUpload={true}
+                  onUploadSuccess={(event) => {
+                    setImage(event.key || '');
+                    setIsUploading(false);
+                  }}
+                  maxFileCount={1}
+                  processFile={processFile}
+                  isResumable
+                />
+                
+                <button 
+                  onClick={handleSubmit} 
+                  disabled={!isFormValid}
+                  style={{ marginTop: '1rem' }}
+                >
+                  {isUploading ? <Spin size="small" /> : 'Save Item'}
+                </button>
+              </FormContainer>
+            </Tabs.TabPane>
 
-        </LayoutContainer>
-        <MenuListContainer>
-            <h2>Menu Items</h2>
-            {menuItems.length === 0 ? (
-                    <p style={{ textAlign: "center" }}>No items available in the menu.</p>
-                  ) : (
-                    <Row gutter={[16, 16]}>
-                      {menuItems.map(({ id, title, description, image, price, category1, category2 }) => (
-                        <Col key={id} xs={24} sm={12} md={8} lg={6}>
-                          <StyledCard hoverable>
-                          {image && (
-                            <StorageImage
-                            alt='none'
-                            path={`${image}`}
-                            style={{ borderRadius: "10px", marginBottom: "10px", width: "100%", height: "200px", objectFit: "cover" }}
-                            />
-                          )}
-                            <h3>{title}</h3>
-                            <p>{description}</p>
-                            <p style={{ fontWeight: "bold" }}>{price} ZŁ</p>
-                            <p>{category1}</p>
-                            <p>{category2}</p>
-                            <button onClick={() => handleDelete(id)}>Delete</button>
-                          </StyledCard>
-                        </Col>
+            <Tabs.TabPane tab="Categories" key="2">
+              <CategoryGrid>
+                <FormContainer>
+                  <h2>Main Categories</h2>
+                  <input
+                    type="text"
+                    placeholder="New Category Name"
+                    value={categoryName1}
+                    onChange={(e) => setCategoryName1(e.target.value)}
+                  />
+                  <button onClick={handleSubmit1} disabled={!isFormValid1}>Add Category</button>
+                  
+                  <CategoryList>
+                    {categories1.map(({ id, categoryName1 }) => (
+                      <CategoryItem key={id}>
+                        <span>{categoryName1}</span>
+                        <button onClick={() => handleDelete1(id)}>Delete</button>
+                      </CategoryItem>
+                    ))}
+                  </CategoryList>
+                </FormContainer>
+
+                <FormContainer>
+                  <h2>Sub Categories</h2>
+                  <input
+                    type="text"
+                    placeholder="Category2 Name"
+                    value={categoryName2}
+                    onChange={(e) => setCategoryName2(e.target.value)}
+                  />
+                  <button onClick={handleSubmit2} disabled={!isFormValid2}>Add Category</button>
+                  
+                  <CategoryList>
+                    {categories2.map(({ id, categoryName2 }) => (
+                      <CategoryItem key={id}>
+                        <span>{categoryName2}</span>
+                        <button onClick={() => handleDelete2(id)}>Delete</button>
+                      </CategoryItem>
+                    ))}
+                  </CategoryList>
+                </FormContainer>
+              </CategoryGrid>
+            </Tabs.TabPane>
+
+            <Tabs.TabPane tab="Menu Items" key="3">
+              <MenuGrid>
+                {menuItems.map((item: MenuItem) => (
+                  <StyledCard key={item.id}>
+                    {item.image && (
+                      <StorageImage
+                        alt={item.title}
+                        path={item.image}
+                        className="card-image"
+                      />
+                    )}
+                    <h3 className="card-title">{item.title}</h3>
+                    <p>{item.description}</p>
+                    <p className="card-price">{item.price} ZŁ</p>
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: '0.5rem', 
+                      flexWrap: 'wrap',
+                      marginBottom: '0.5rem' 
+                    }}>
+                      <span>{item.category1}</span>
+                      {Array.isArray(item.category2) && item.category2.map((cat: string, idx: number) => (
+                        <span key={idx}>{cat}</span>
                       ))}
-                    </Row>
-                  )}
-          </MenuListContainer>
-        </div>
+                    </div>
+                    <button onClick={() => handleDelete(item.id)}>Delete</button>
+                  </StyledCard>
+                ))}
+              </MenuGrid>
+            </Tabs.TabPane>
+          </Tabs>
+        </DashboardContainer>
       )}
     </Authenticator>
   );

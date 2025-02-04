@@ -2,6 +2,7 @@ import { a, defineData, type ClientSchema } from '@aws-amplify/backend';
 import { addUserToGroup } from './add-user-to-group/resource';
 import { removeUserFromGroup } from './remove-user-from-group/resource';
 import { listUsers } from './list-users/resource';
+import { listGroups } from './list-groups/resource';
 import { listGroupsForUser } from './list-groups-for-users/resource';
 
 const schema = a.schema({
@@ -15,7 +16,7 @@ const schema = a.schema({
     })
     .authorization(allow => [
       // Allow anyone auth'd with an API key to read everyone's posts.
-      allow.publicApiKey().to(['read']),
+      allow.guest(),
       // Allow signed-in user to create, read, update,
       // and delete their __OWN__ posts.
       allow.owner(),
@@ -26,17 +27,17 @@ const schema = a.schema({
   })
     .authorization(allow => [
       // Allow anyone auth'd with an API key to read everyone's posts.
-      allow.publicApiKey().to(['read']),
+      allow.guest().to(['read']),
       // Allow signed-in user to create, read, update,
       // and delete their __OWN__ posts.
-      allow.group("admins"),
+      allow.owner(),
     ]),
   Category2: a.model({
       categoryName2: a.string(),
   })
     .authorization(allow => [
       // Allow anyone auth'd with an API key to read everyone's posts.
-      allow.publicApiKey().to(['read']),
+      allow.guest().to(['read']),
       // Allow signed-in user to create, read, update,
       // and delete their __OWN__ posts.
       allow.owner(),
@@ -46,7 +47,7 @@ const schema = a.schema({
       userId: a.string().required(),
       groupName: a.string().required(),
     })
-    .authorization((allow) => [allow.group("users"), allow.authenticated()])
+    .authorization((allow) => [allow.group("admins")])
     .handler(a.handler.function(addUserToGroup))
     .returns(a.json()),
   removeUserFromGroup: a
@@ -54,21 +55,26 @@ const schema = a.schema({
       userId: a.string().required(),
       groupName: a.string().required(),
     })
-    .authorization((allow) => [allow.group("users")])
+    .authorization((allow) => [allow.group("admins")])
     .handler(a.handler.function(removeUserFromGroup))
     .returns(a.json()),
   listUsers: a
     .mutation().arguments({
       attributes: a.string().required()
     })
-    .authorization((allow) => [allow.group("users")])
+    .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(listUsers))
+    .returns(a.json()),
+  listGroups: a
+    .mutation()
+    .authorization((allow) => [allow.group("users"), allow.authenticated()])
+    .handler(a.handler.function(listGroups))
     .returns(a.json()),
   listGroupsForUser: a
     .mutation().arguments({
       username: a.string().required()
     })
-    .authorization((allow) => [allow.group("users")])
+    .authorization((allow) => [allow.group("users"), allow.authenticated()])
     .handler(a.handler.function(listGroupsForUser))
     .returns(a.json()),
 });
