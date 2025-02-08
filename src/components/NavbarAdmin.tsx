@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import { signOut } from "aws-amplify/auth";
+import { signOut, fetchAuthSession } from "aws-amplify/auth";
 import { Button } from "antd";
+import { useEffect, useState } from "react";
 
 const DivNav = styled.div`
   position: fixed;
@@ -113,6 +114,26 @@ const Lemon = styled.div`
 `;
 
 const NavBarLogin = () => {
+  const [isUsers, setIsUsers] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkUserPermissions();
+  }, []);
+
+  const checkUserPermissions = async () => {
+    try {
+      const {tokens} = await fetchAuthSession({ forceRefresh: true});
+      const groups = tokens?.accessToken?.payload['cognito:groups'] as string[];
+      // Проверяем, что пользователь состоит ТОЛЬКО в группе users
+      setIsUsers(groups.length === 1 && groups.includes('users'));
+    } catch (error) {
+      console.error('Error checking user permissions:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const toggleMenu = () => {
     const menuLogin = document.getElementById('menuLogin');
     const lemonLogo = document.getElementById('lemonLogo');
@@ -134,30 +155,38 @@ const NavBarLogin = () => {
     await signOut({ global: true });
   }
 
+  if (isLoading) {
+    return null; // или можно вернуть компонент загрузки
+  }
+
   return (
     <div>
-  <Lemon id="lemonLogo" onClick={toggleMenu}>
-    <img src="/icons8-lemon-100.png" alt="Menu Icon" />
-  </Lemon>
-<DivNav id="divNav">
-  <Sidebar id="menuLogin">
-    <UlStyled>
-      <NavItem>
-        <LinkStyled to="/login/editor_menu">Menu Editor</LinkStyled>
-      </NavItem>
-      <NavItem>
-        <LinkStyled to="/login/admin_panel">Admin</LinkStyled>
-      </NavItem>
-      <NavItem>
-        <LinkStyled to="/login/analytics_page">Analytics</LinkStyled>
-      </NavItem>
-      <NavItem>
-        <CustomButton onClick={buttonSignOut}>Sign out</CustomButton>
-      </NavItem>
-    </UlStyled>
-  </Sidebar>
-</DivNav>
-</div>
+      <Lemon id="lemonLogo" onClick={toggleMenu}>
+        <img src="/icons8-lemon-100.png" alt="Menu Icon" />
+      </Lemon>
+      <DivNav id="divNav">
+        <Sidebar id="menuLogin">
+          <UlStyled>
+            {!isUsers && (
+              <>
+                <NavItem>
+                  <LinkStyled to="/login/editor_menu">Menu Editor</LinkStyled>
+                </NavItem>
+                <NavItem>
+                  <LinkStyled to="/login/admin_panel">Admin</LinkStyled>
+                </NavItem>
+                <NavItem>
+                  <LinkStyled to="/login/analytics_page">Analytics</LinkStyled>
+                </NavItem>
+              </>
+            )}
+            <NavItem>
+              <CustomButton onClick={buttonSignOut}>Sign out</CustomButton>
+            </NavItem>
+          </UlStyled>
+        </Sidebar>
+      </DivNav>
+    </div>
   );
 };
 

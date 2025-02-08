@@ -10,6 +10,12 @@ import Order from '../pages/order/order_page';
 import AdminPanel from '../pages/admin_panel/admin_panel_page';
 import EditorMenu from '../pages/login/login_components/editor_menu';
 import Analytics_page from '../pages/login/login_components/analytics_page';
+import ProtectedRoute from './ProtectedRoute';
+
+const staffRoles: UserRole[] = ['workers', 'managers', 'admins'];
+export type UserRole = 'users' | 'workers' | 'managers' | 'admins';
+export type UserRoles = UserRole[];
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -27,9 +33,32 @@ export const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <Login /> },
-      { path: 'editor_menu', element: <EditorMenu /> },
-      { path: 'admin_panel', element: <AdminPanel /> },
-      { path: 'analytics_page', element: <Analytics_page/>},
+      { 
+        path: 'editor_menu', 
+        element: (
+          <ProtectedRoute allowedRoles={staffRoles}>
+            <EditorMenu />
+          </ProtectedRoute>
+        ) 
+      },
+      { 
+        path: 'admin_panel', 
+        element: (
+          <ProtectedRoute allowedRoles={staffRoles}>
+            <AdminPanel />
+          </ProtectedRoute>
+        ) 
+      },
+      { 
+        path: 'analytics_page', 
+        element: (
+          <ProtectedRoute allowedRoles={staffRoles}>
+            <Analytics_page/>
+          </ProtectedRoute>
+        )
+      },
     ],
   },
 ]);
+
+

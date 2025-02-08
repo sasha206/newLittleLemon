@@ -132,11 +132,11 @@ const Menu = () => {
   const fetchMenu = async () => {
     try {
       setLoading(true);
-      const { data: items } = await client.models.ItemMenu.list({authMode: 'identityPool'});
+      const { data: items } = await client.models.ItemMenu.list({authMode: 'apiKey'});
       setMenuItems(items);
-      const { data: items1 } = await client.models.Category1.list({authMode: 'identityPool'});
+      const { data: items1 } = await client.models.Category1.list({authMode: 'apiKey'});
       setMenuCategories1(items1);
-      const { data: items2 } = await client.models.Category2.list({authMode: 'identityPool'});
+      const { data: items2 } = await client.models.Category2.list({authMode: 'apiKey'});
       setMenuCategories2(items2);
     } catch (error) {
       console.error("Error fetching menu items:", error);

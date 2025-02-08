@@ -16,31 +16,26 @@ const schema = a.schema({
     })
     .authorization(allow => [
       // Allow anyone auth'd with an API key to read everyone's posts.
-      allow.guest(),
-      // Allow signed-in user to create, read, update,
-      // and delete their __OWN__ posts.
-      allow.owner(),
+      allow.publicApiKey().to(['read']),
+      allow.owner().to(['read']),
+      allow.groups(["admins", "managers"])
     ]),
   Category1: a.model({
       categoryName1: a.string(),
 
   })
     .authorization(allow => [
-      // Allow anyone auth'd with an API key to read everyone's posts.
-      allow.guest().to(['read']),
-      // Allow signed-in user to create, read, update,
-      // and delete their __OWN__ posts.
-      allow.owner(),
+      allow.publicApiKey().to(['read']),
+      allow.owner().to(['read']),
+      allow.groups(["admins", "managers"])
     ]),
   Category2: a.model({
       categoryName2: a.string(),
   })
     .authorization(allow => [
-      // Allow anyone auth'd with an API key to read everyone's posts.
-      allow.guest().to(['read']),
-      // Allow signed-in user to create, read, update,
-      // and delete their __OWN__ posts.
-      allow.owner(),
+      allow.publicApiKey().to(['read']),
+      allow.owner().to(['read']),
+      allow.groups(["admins", "managers"])
     ]),
   addUserToGroup: a
     .mutation().arguments({

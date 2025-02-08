@@ -11,6 +11,7 @@ import { StorageImage } from '@aws-amplify/ui-react-storage';
 import { Card, Row, Col, Tabs, Spin, message } from "antd";
 import { Checkbox } from 'antd';
 import imageCompression from "browser-image-compression";
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 const theme = {
   colors: {
