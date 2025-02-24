@@ -6,7 +6,6 @@ import { fetchUserAttributes } from "aws-amplify/auth";
 import { fetchAuthSession } from "aws-amplify/auth";
 import type { Schema } from "../../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-import { deleteUser } from 'aws-amplify/auth';
 import styled from 'styled-components';
 import "@aws-amplify/ui-react/styles.css";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -150,35 +149,6 @@ const ProfileInfo = styled.div`
   }
 `;
 
-const GroupsList = styled.div`
-  margin-top: 20px;
-
-  h3 {
-    color: #2c3e50;
-    margin-bottom: 15px;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  li {
-    background: #e3f2fd;
-    color: #1976d2;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9em;
-
-    @media (max-width: 576px) {
-      width: 100%;
-      text-align: center;
-    }
-  }
-`;
 
 const UserList = styled.ul`
   list-style: none;
@@ -256,68 +226,9 @@ const GroupsListContainer = styled.div`
   }
 `;
 
-const GroupItem = styled.div`
-  padding: 15px;
-  margin-bottom: 10px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  
-  .group-name {
-    font-weight: bold;
-    color: #1976d2;
-  }
-  
-  .group-desc {
-    font-size: 0.9em;
-    color: #666;
-    margin-top: 5px;
-  }
-`;
 
-const GroupManagementControls = styled.div`
-  margin-top: 20px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
 
-  .controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    
-    @media (max-width: 576px) {
-      flex-direction: column;
-    }
-  }
 
-  input {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    flex: 1;
-  }
-
-  button {
-    padding: 8px 16px;
-    border-radius: 4px;
-    border: none;
-    background: #1976d2;
-    color: white;
-    cursor: pointer;
-
-    &:hover {
-      background: #1565c0;
-    }
-
-    &.remove {
-      background: #dc3545;
-      
-      &:hover {
-        background: #c82333;
-      }
-    }
-  }
-`;
 
 const DraggableGroupItem = styled.div`
   padding: 12px;
@@ -358,11 +269,9 @@ const DropZone = styled.div<{ isDraggingOver: boolean }>`
 const Admin_panel = () => {
   const [name, setName] = useState<string | undefined>();
   const [group, setGroup] = useState<string[] | undefined>();
-  const [groupName, setGroupName] = useState<string>(""); 
   const [userList, setUserList] = useState<User[]>([]);
   const [groupList, setGroupList] = useState<Groups[]>([]);
   const [userGroups, setUserGroups] = useState<{ [key: string]: Groups[] }>({});
-  const [loadingGroups, setLoadingGroups] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const fetchUserGroups = async () => {
@@ -375,14 +284,7 @@ const Admin_panel = () => {
       console.error("Error fetching user groups:", error);
     }
   };
-  async function handleDeleteUser() {
-    try {
-      await deleteUser();
-      alert("User delete");
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
   
 
   const fetchAttributesAndGroups = async () => {
@@ -437,7 +339,7 @@ const Admin_panel = () => {
   };
 
   const fetchUserListGroups = async (sub: string) => {
-    setLoadingGroups(sub); // Показываем индикатор загрузки для конкретного пользователя
+    // Show loading indicator for specific user
     try {
       const response = await client.mutations.listGroupsForUser({ username: sub });
       if (response.data) {
@@ -447,10 +349,10 @@ const Admin_panel = () => {
         setUserGroups(prev => ({ ...prev, [sub]: [] }));
       }
     } catch (error) {
-      console.error("Ошибка при загрузке групп:", error);
+      console.error("Error loading groups:", error);
       setUserGroups(prev => ({ ...prev, [sub]: [] }));
     } finally {
-      setLoadingGroups(null); // Убираем индикатор загрузки
+      console.log('User groups:', userGroups);
     }
   };
 
@@ -472,7 +374,7 @@ const Admin_panel = () => {
       const response = await client.mutations.listGroups();
       if (response.data) {
         const parsedResponse: Root = JSON.parse(response.data as string);
-        // Фильтруем группы 'users' и 'admins' из списка
+        // Filter out 'users' and 'admins' groups from the list
         const filteredGroups = parsedResponse.Groups.filter(group => 
           !['users', 'admins'].includes(group.GroupName)
         );
@@ -496,15 +398,11 @@ const Admin_panel = () => {
     
     if (result.source.droppableId === 'availableGroups' && 
         result.destination.droppableId === 'userGroups') {
-      // Добавляем группу
-      setGroupName(groupName); // Устанавливаем groupName перед вызовом handleAddUserToGroup
       await handleAddUserToGroup(selectedUser.Username, groupName);
       await fetchUserListGroups(selectedUser.Attributes.find(attr => attr.Name === "sub")?.Value || '');
     } else if (result.source.droppableId === 'userGroups' && 
                result.destination.droppableId === 'removeZone' &&
                !['users', 'admins'].includes(groupName)) {
-      // Удаляем группу
-      setGroupName(groupName); // Устанавливаем groupName перед вызовом handleRemoveUserFromGroup
       await handleRemoveUserFromGroup(selectedUser.Username, groupName);
       await fetchUserListGroups(selectedUser.Attributes.find(attr => attr.Name === "sub")?.Value || '');
     }
@@ -536,13 +434,13 @@ const Admin_panel = () => {
                           isSelected={selectedUser?.Username === user.Username}
                           onClick={() => {setSelectedUser(user), fetchUserListGroups(sub || '')}}
                         >
-                          {preferredUsername || "Имя не указано"}
+                          {preferredUsername || "Name not specified"}
                         </UserItem>
                       );
                     })}
                   </UserList>
                 ) : (
-                  <p>Загрузка пользователей...</p>
+                  <p>Loading users...</p>
                 )}
               </UserListContainer>
 
@@ -664,7 +562,7 @@ const UserProfile: React.FC<{
                     index={index}
                     isDragDisabled={['users', 'admins'].includes(group.GroupName)} // Блокируем перетаскивание для обеих групп
                   >
-                    {(provided, snapshot) => (
+                    {(provided) => (
                       <DraggableGroupItem
                         ref={provided.innerRef}
                         {...provided.draggableProps}
