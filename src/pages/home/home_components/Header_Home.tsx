@@ -1,7 +1,9 @@
+// Import necessary dependencies and assets
 import styled from "styled-components";
 import HeaderImg from "../home_components/restauranfood.jpg";
 import { Button } from "antd";
 
+// Custom styled button component with hover effects and responsive design
 const CustomButton = styled(Button)`
   background-color: #f4ce14;
   border: none;
@@ -24,42 +26,43 @@ const CustomButton = styled(Button)`
   }
 `;
 
+// Main title styling with responsive adjustments
 const Title = styled.h1`
   color: #f4ce14;
   font-family: 'Markazi Text', serif;
   font-weight: 500;
-  font-size: 40pt;
+  font-size: 32pt;
   margin: 0;
 
-  /* Мобильная версия */
   @media (max-width: 768px) {
-    font-size: 24pt;
+    font-size: 20pt;
     text-align: center;
   }
 `;
 
+// Subtitle styling with responsive design
 const Subtitle = styled.h1`
   color: white;
   font-family: 'Markazi Text', serif;
   font-weight: 500;
-  font-size: 3pt;
+  font-size: 24pt;
   margin: 0;
   padding-bottom: 0px;
 
-  /* Мобильная версия */
   @media (max-width: 768px) {
     font-size: 14pt;
     text-align: center;
   }
 `;
 
+// Paragraph text styling with responsive adjustments
 const Paragraph = styled.p`
   color: white;
   font-family: 'Karla', sans-serif;
-  font-size: 16pt;
+  font-size: 14pt;
   font-weight: 400;
+  margin: 10px 0; 
 
-  /* Мобильная версия */
   @media (max-width: 768px) {
     font-size: 14pt;
     text-align: center;
@@ -67,11 +70,13 @@ const Paragraph = styled.p`
   }
 `;
 
+// Main container styling with gradient overlay
 const HomeStyled = styled.div`
   background-color: rgb(73, 94, 87);
   margin-bottom: 1vh;
   position: relative;
-  overflow: hidden;
+  overflow: visible; 
+  z-index: 1;  
 
   &::before {
     content: '';
@@ -85,68 +90,76 @@ const HomeStyled = styled.div`
   }
 `;
 
+// Background header container with responsive adjustments
 const BackgroundHeaderStyled = styled.header`
 
-  /* Мобильная версия */
   @media (max-width: 768px) {
     height: auto;
     padding: 20px 0;
   }
 `;
 
+// Header layout container with responsive design
 const HeaderStyled = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 0 auto;
   max-width: 1200px;
-  padding: 60px 20px;
+  padding: 30px 20px;  // Reduced from 60px
   position: relative;
   z-index: 2;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    padding: 30px 20px;
+    padding: 20px;  // Reduced from 30px
   }
 `;
 
+// Article content container with responsive width
 const ArticleHeader = styled.article`
-  max-width: 20%;
+  max-width: 30%;  // Increased from 20% for better readability
 
   h1 {
     font-family: 'Markazi Text', serif;
     font-weight: 500;
-    font-size: 40pt;
+    font-size: 32pt;  // Reduced from 40pt
     margin: 0;
   }
 
   h2 {
     font-family: 'Markazi Text', serif;
     font-weight: 500;
-    font-size: 18pt;
+    font-size: 16pt;  // Reduced from 18pt
     margin: 0;
   }
 
-  /* Мобильная версия */
   @media (max-width: 768px) {
-    max-width: 80%;
+    max-width: 90%;
     text-align: center;
   }
 `;
 
+// Header image styling with responsive adjustments and visual effects
 const ImgHeader = styled.img`
   width: 100%;
-  max-width: 30%;
+  max-width: 25%;  // Reduced from 30%
   height: auto;
   border-radius: 10px;
+  position: relative;
+  z-index: 2;  // Higher than HomeStyled
+  transform: translateY(100px);  // Reduced from 150px
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);  // Add shadow for better visual effect
 
-  /* Мобильная версия */
   @media (max-width: 768px) {
-    max-width: 80%;
-    margin-top: 20px;
+    max-width: 70%;  // Reduced from 80%
+    margin-top: 15px;  // Reduced from 20px
+    transform: translateY(0);  // Reset transform on mobile
+    z-index: 1;  // Reset z-index on mobile
   }
 `;
 
+// Main header component
 const Header = () => {
   return (
     <HomeStyled>

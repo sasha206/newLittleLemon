@@ -7,13 +7,11 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 
-
 Amplify.configure(outputs);
 
 const Login = () => {
   const [name, setName] = useState<string | undefined>();
   const [group, setGroup] = useState<any | undefined>();
-
   useEffect(() => {
     async function fetchAttributesAndSetName() {
       try {
@@ -24,7 +22,7 @@ const Login = () => {
         const { tokens } = await fetchAuthSession();
         const groups = tokens?.accessToken.payload["cognito:groups"] as string[];
         if (Array.isArray(groups)) {
-            setGroup(groups as string[]); // Приведение, если вы уверены в структуре
+            setGroup(groups as string[]);
         }
       } catch (error) {
         console.error("error:", error);
@@ -33,7 +31,7 @@ const Login = () => {
     fetchAttributesAndSetName();
   }, []);
   useEffect(() => {
-    console.log("Group изменилось:", group); // Срабатывает при каждом обновлении group
+    console.log("Group changes:", group); 
   }, [group]);
 
   return (

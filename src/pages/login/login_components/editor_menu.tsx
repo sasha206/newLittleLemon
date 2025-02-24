@@ -1,3 +1,4 @@
+// Import necessary dependencies
 import '@aws-amplify/ui-react/styles.css';
 import { useState, useEffect } from "react";
 import styled from "styled-components";
@@ -8,11 +9,11 @@ import type { Schema } from "../../../../amplify/data/resource";
 import { FileUploader } from '@aws-amplify/ui-react-storage';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { StorageImage } from '@aws-amplify/ui-react-storage';
-import { Card, Row, Col, Tabs, Spin, message } from "antd";
+import { Card, Tabs, Spin } from "antd";
 import { Checkbox } from 'antd';
 import imageCompression from "browser-image-compression";
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
+// Define theme object for consistent styling
 const theme = {
   colors: {
     primary: '#495E57',
@@ -25,9 +26,12 @@ const theme = {
   }
 };
 
+// Configure Amplify with AWS settings
 Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
+// Styled components for the UI
+// StyledCard: Component for displaying menu items with hover effects
 const StyledCard = styled(Card)`
   border-radius: 12px;
   overflow: hidden;
@@ -61,34 +65,7 @@ const StyledCard = styled(Card)`
   }
 `;
 
-const ScrollList = styled.div`
-  width: 300px;
-  height: 400px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  overflow-y: auto;
-`;
-
-const LayoutContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  padding: 20px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const LayoutContainerCategory = styled.div`
-  display: grid;
-  grid-template-rows: 50% 50%;
-`;
-
+// FormContainer: Styled form wrapper with consistent styling for inputs and buttons
 const FormContainer = styled.div`
   max-width: 600px;
   margin: 0 auto;
@@ -131,43 +108,7 @@ const FormContainer = styled.div`
   }
 `;
 
-const FormCategoryContainer = styled.div`
-  text-align: center;
-  margin: 5px;
-
-  input {
-    display: block;
-    margin: 10px auto;
-    padding: 10px;
-    width: 80%;
-    max-width: 300px;
-  }
-
-  button {
-    padding: 10px 20px;
-    margin-top: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-
-    &:disabled {
-      background-color: #ddd;
-      cursor: not-allowed;
-    }
-  }
-`;
-
-const MenuListContainer = styled.div`
-  margin: 20px;
-  text-align: center;
-`;
-
+// MenuItem: Basic styled component for individual menu items
 const MenuItem = styled.div`
   margin: 10px;
   padding: 10px;
@@ -179,26 +120,14 @@ const MenuItem = styled.div`
   background-color: #f9f9f9;
 `;
 
-const FileUploaderContainer = styled.div`
-  width: 80%;
-  max-width: 300px;
-  margin: 0 auto;
-`;
-
+// DashboardContainer: Main container for the entire dashboard
 const DashboardContainer = styled.div`
   min-height: 100vh;
   background: ${theme.colors.background};
   padding: 2rem;
 `;
 
-const TabContainer = styled.div`
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  margin-top: 2rem;
-`;
-
+// Grid layouts for categories and menu items
 const CategoryGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -213,6 +142,7 @@ const MenuGrid = styled.div`
   padding: 1.5rem;
 `;
 
+// Styling for the category list with custom scrollbar
 const CategoryList = styled.div`
   max-height: 300px;
   overflow-y: auto;
@@ -236,6 +166,7 @@ const CategoryList = styled.div`
   }
 `;
 
+// Individual category item styling with hover effects
 const CategoryItem = styled.div`
   position: relative;
   padding: 0.75rem;
@@ -285,6 +216,7 @@ const CategoryItem = styled.div`
   }
 `;
 
+// TypeScript interfaces for data structures
 interface MenuItem {
   id: string;
   title: string;
@@ -306,6 +238,7 @@ interface Category2 {
 }
 
 const EditorMenu = () => {
+  // State management for form inputs and data
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -319,6 +252,7 @@ const EditorMenu = () => {
   const [category1, setCategory1] = useState("");
   const [category2, setCategory2] = useState<string[]>([]);
 
+  // Image compression function to optimize uploaded images
   const compressImage = async (file: File) => {
     const options = {
       maxSizeMB: 0.5,
@@ -340,6 +274,7 @@ const EditorMenu = () => {
     }
   };
 
+  // File processing function for upload
   const processFile = async ({ key, file }: { key: string; file: File }): Promise<{ key: string; file: File }> => {
     try {
       const compressedFile = await compressImage(file);
@@ -350,6 +285,7 @@ const EditorMenu = () => {
     }
   };
 
+  // Fetch all menu items and categories from the database
   const fetchMenu = async () => {
     try {
       const { data: items } = await client.models.ItemMenu.list();
@@ -365,6 +301,7 @@ const EditorMenu = () => {
     }
   };
 
+  // Handle submission of new menu items
   const handleSubmit = async () => {
     try {
       const newItem = {
@@ -390,6 +327,7 @@ const EditorMenu = () => {
     }
   };
 
+  // Handle creation of main categories (Category1)
   const handleSubmit1 = async () => {
     try {
       const { data: newItem } = await client.models.Category1.create({
@@ -404,6 +342,7 @@ const EditorMenu = () => {
     }
   };
 
+  // Handle creation of sub-categories (Category2)
   const handleSubmit2 = async () => {
     try {
       const { data: newItem } = await client.models.Category2.create({
@@ -418,6 +357,7 @@ const EditorMenu = () => {
     }
   };
 
+  // Delete handlers for menu items and categories
   const handleDelete = async (id: string) => {
     try {
       await client.models.ItemMenu.delete({ id });
@@ -448,27 +388,33 @@ const EditorMenu = () => {
     }
   };
 
+  // Load initial data on component mount
   useEffect(() => {
     fetchMenu();
   }, []);
 
+  // Form validation flags
   const isFormValid = title && description && price && !isUploading;
   const isFormValid1 = categoryName1;
   const isFormValid2 = categoryName2;
 
+  // Handle multiple category selection
     const handleCheckboxChange = (checkedValues: string[]) => {
       setCategory2(checkedValues);
     };
 
   return (
+    // Wrap everything in Authenticator for protected access
     <Authenticator>
-      {({ user }) => (
+      {({}) => (
         <DashboardContainer>
+          {/* Dashboard Layout with Tabs */}
           <h1 style={{ color: theme.colors.primary, marginBottom: '1rem' }}>
             Restaurant Dashboard
           </h1>
           
           <Tabs defaultActiveKey="1">
+            {/* Tab 1: Add Menu Item Form */}
             <Tabs.TabPane tab="Add Menu Item" key="1">
               <FormContainer>
                 <h2>Add New Menu Item</h2>
@@ -535,6 +481,7 @@ const EditorMenu = () => {
               </FormContainer>
             </Tabs.TabPane>
 
+            {/* Tab 2: Category Management */}
             <Tabs.TabPane tab="Categories" key="2">
               <CategoryGrid>
                 <FormContainer>
@@ -579,6 +526,7 @@ const EditorMenu = () => {
               </CategoryGrid>
             </Tabs.TabPane>
 
+            {/* Tab 3: Menu Items Display */}
             <Tabs.TabPane tab="Menu Items" key="3">
               <MenuGrid>
                 {menuItems.map((item: MenuItem) => (

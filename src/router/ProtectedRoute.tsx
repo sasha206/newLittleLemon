@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { groups, isLoading } = useAuth();
 
-  if (isLoading) return <p>Загрузка...</p>;
+  if (isLoading) return <p>Loading...</p>;
 
   if (!groups.some(role => allowedRoles.includes(role))) {
     return <Navigate to="/login" replace />;
