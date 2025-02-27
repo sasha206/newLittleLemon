@@ -150,8 +150,9 @@ const Lemon = styled.div`
   visibility: visible;
   opacity: 1;
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 3px;
+  left: auto;
+  right: 20px;
   z-index: 1100;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
