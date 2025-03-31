@@ -6,6 +6,7 @@ import { fetchUserAttributes } from "aws-amplify/auth";
 import { fetchAuthSession } from "aws-amplify/auth";
 import type { Schema } from "../../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+
 import styled from 'styled-components';
 import "@aws-amplify/ui-react/styles.css";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -150,6 +151,7 @@ const ProfileInfo = styled.div`
 `;
 
 
+
 const UserList = styled.ul`
   list-style: none;
   padding: 0;
@@ -228,8 +230,6 @@ const GroupsListContainer = styled.div`
 
 
 
-
-
 const DraggableGroupItem = styled.div`
   padding: 12px;
   margin-bottom: 8px;
@@ -269,6 +269,7 @@ const DropZone = styled.div<{ isDraggingOver: boolean }>`
 const Admin_panel = () => {
   const [name, setName] = useState<string | undefined>();
   const [group, setGroup] = useState<string[] | undefined>();
+
   const [userList, setUserList] = useState<User[]>([]);
   const [groupList, setGroupList] = useState<Groups[]>([]);
   const [userGroups, setUserGroups] = useState<{ [key: string]: Groups[] }>({});
@@ -339,7 +340,7 @@ const Admin_panel = () => {
   };
 
   const fetchUserListGroups = async (sub: string) => {
-    // Show loading indicator for specific user
+
     try {
       const response = await client.mutations.listGroupsForUser({ username: sub });
       if (response.data) {
@@ -349,10 +350,10 @@ const Admin_panel = () => {
         setUserGroups(prev => ({ ...prev, [sub]: [] }));
       }
     } catch (error) {
-      console.error("Error loading groups:", error);
+      console.error("Ошибка при загрузке групп:", error);
       setUserGroups(prev => ({ ...prev, [sub]: [] }));
     } finally {
-      console.log('User groups:', userGroups);
+      console.log("User groups:", userGroups);
     }
   };
 
@@ -374,7 +375,7 @@ const Admin_panel = () => {
       const response = await client.mutations.listGroups();
       if (response.data) {
         const parsedResponse: Root = JSON.parse(response.data as string);
-        // Filter out 'users' and 'admins' groups from the list
+        // Фильтруем группы 'users' и 'admins' из списка
         const filteredGroups = parsedResponse.Groups.filter(group => 
           !['users', 'admins'].includes(group.GroupName)
         );
@@ -398,11 +399,14 @@ const Admin_panel = () => {
     
     if (result.source.droppableId === 'availableGroups' && 
         result.destination.droppableId === 'userGroups') {
+      // Добавляем группу
+
       await handleAddUserToGroup(selectedUser.Username, groupName);
       await fetchUserListGroups(selectedUser.Attributes.find(attr => attr.Name === "sub")?.Value || '');
     } else if (result.source.droppableId === 'userGroups' && 
                result.destination.droppableId === 'removeZone' &&
                !['users', 'admins'].includes(groupName)) {
+      // Удаляем группу
       await handleRemoveUserFromGroup(selectedUser.Username, groupName);
       await fetchUserListGroups(selectedUser.Attributes.find(attr => attr.Name === "sub")?.Value || '');
     }
@@ -434,13 +438,13 @@ const Admin_panel = () => {
                           isSelected={selectedUser?.Username === user.Username}
                           onClick={() => {setSelectedUser(user), fetchUserListGroups(sub || '')}}
                         >
-                          {preferredUsername || "Name not specified"}
+                          {preferredUsername || "Имя не указано"}
                         </UserItem>
                       );
                     })}
                   </UserList>
                 ) : (
-                  <p>Loading users...</p>
+                  <p>Загрузка пользователей...</p>
                 )}
               </UserListContainer>
 
@@ -562,7 +566,7 @@ const UserProfile: React.FC<{
                     index={index}
                     isDragDisabled={['users', 'admins'].includes(group.GroupName)} // Блокируем перетаскивание для обеих групп
                   >
-                    {(provided) => (
+                    {(provided, ) => (
                       <DraggableGroupItem
                         ref={provided.innerRef}
                         {...provided.draggableProps}
